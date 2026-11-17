@@ -47,11 +47,18 @@ Upload it to Kaggle Notebooks or Google Colab and run from the top.
 
 ## The website
 
-The site (`index.html`, `courses/`, `assets/`) is generated from the course folders by `tools/build_site.py`. After changing a notebook or course, rebuild and commit:
+The site at https://motiur.github.io/onlineCourses/ is generated from the course folders by `tools/build_site.py` and published from the [motiur.github.io](https://github.com/motiur/motiur.github.io) repository, in its `onlineCourses/` folder. GitHub Pages is **not** switched on for this repository: leave it off, because a Pages site here would take over the same address.
+
+To update the site after changing a notebook or course, check out both repositories side by side, then from this repository's root:
 
 ```bash
 pip install nbconvert
-python3 tools/build_site.py
 ```
 
-Course titles, summaries and topics shown on the site are set in the `COURSES` list at the top of the script; page styles are in `tools/site.css`. GitHub Pages serves the `main` branch from the repository root.
+```bash
+python3 tools/build_site.py --out ../motiur.github.io/onlineCourses
+```
+
+Then commit and push `motiur.github.io`. The script only replaces a folder it built itself, so it will not overwrite anything else in that repository.
+
+Course titles, summaries and topics shown on the site are set in the `COURSES` list at the top of the script; page styles are in `tools/site.css`.

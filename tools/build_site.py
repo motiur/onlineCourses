@@ -1,17 +1,26 @@
 #!/usr/bin/env python3
-"""Build the GitHub Pages site for the AI courses.
+"""Build the course website.
 
-Run from the repository root:
+The site is published from the motiur.github.io repository, in its
+onlineCourses/ folder, so it appears at https://motiur.github.io/onlineCourses/.
+With both repositories checked out side by side, run from this repository's root:
 
     pip install nbconvert
-    python3 tools/build_site.py
+    python3 tools/build_site.py --out ../motiur.github.io/onlineCourses
 
-It writes index.html, courses/ and assets/ at the repository root. The course
-folders (Course_*/) are the source; nothing in them is changed.
+Then commit and push the motiur.github.io repository.
+
+The output folder is self-contained: index.html, courses/, assets/ and a copy of
+each course PDF and notebook for downloading. The course folders here (Course_*/)
+are the source; nothing in them is changed. The script only replaces a folder it
+created itself (marked by a .built-by-build_site file), so it cannot overwrite
+other content by mistake.
 """
 from __future__ import annotations
 
+import argparse
 import glob
+import sys
 import html
 import json
 import os
@@ -219,9 +228,10 @@ def page(title, body, depth, description="", extra_head=""):
 """
 
 
-def btn(href, label, kind="ghost", external=False, icon=""):
+def btn(href, label, kind="ghost", external=False, icon="", download=False):
     ext = ' target="_blank" rel="noopener"' if external else ""
-    return f'<a class="btn btn-{kind}" href="{esc(href)}"{ext}>{icon}{esc(label)}</a>'
+    dl = " download" if download else ""
+    return f'<a class="btn btn-{kind}" href="{esc(href)}"{ext}{dl}>{icon}{esc(label)}</a>'
 
 
 ICONS = {
@@ -386,7 +396,7 @@ def build_course(c, sessions):
             {btn(s['page'], 'Read notebook', 'soft', icon=ICONS['read'])}
             {btn(colab_url(s['rel']), 'Colab', 'ghost', True, ICONS['play'])}
             {btn(kaggle_url(s['rel']), 'Kaggle', 'ghost', True, ICONS['play'])}
-            {btn('../../' + s['rel'], '.ipynb', 'ghost', icon=ICONS['down'])}
+            {btn('../../' + s['rel'], '.ipynb', 'ghost', icon=ICONS['down'], download=True)}
             {flag}
           </div>
         </div>
@@ -504,7 +514,7 @@ def build_session(c, sessions, i):
     <div class="hero-cta">
       {btn(colab_url(s['rel']), 'Open in Colab', 'primary', True, ICONS['play'])}
       {btn(kaggle_url(s['rel']), 'Open in Kaggle', 'ghost', True, ICONS['play'])}
-      {btn('../../' + s['rel'], 'Download .ipynb', 'ghost', icon=ICONS['down'])}
+      {btn('../../' + s['rel'], 'Download .ipynb', 'ghost', icon=ICONS['down'], download=True)}
       {btn(github_url(s['rel']), 'View on GitHub', 'ghost', True, GH_ICON)}
     </div>
   </div>
@@ -528,44 +538,79 @@ def build_session(c, sessions, i):
 # ---------------------------------------------------------------------------
 # Assets
 # ---------------------------------------------------------------------------
-def write_assets():
-    os.makedirs(os.path.join(ROOT, "assets"), exist_ok=True)
+def write_assets(out):
+    os.makedirs(os.path.join(out, "assets"), exist_ok=True)
     css_src = os.path.join(os.path.dirname(os.path.abspath(__file__)), "site.css")
     light = HtmlFormatter(style="friendly").get_style_defs(".highlight")
     dark = HtmlFormatter(style="github-dark").get_style_defs(":root:not([data-theme=light]) .highlight")
-    with open(os.path.join(ROOT, "assets", "site.css"), "w", encoding="utf-8") as f:
+    with open(os.path.join(out, "assets", "site.css"), "w", encoding="utf-8") as f:
         f.write(open(css_src, encoding="utf-8").read())
         f.write("\n/* ---- code highlighting (generated) ---- */\n")
         f.write(light.replace(".highlight  { background: #f0f0f0; }", ""))
         f.write("\n@media (prefers-color-scheme: dark) {\n")
         f.write(dark)
         f.write("\n}\n.highlight, .highlight pre { background: transparent !important; }\n")
-    with open(os.path.join(ROOT, "assets", "favicon.svg"), "w", encoding="utf-8") as f:
+    with open(os.path.join(out, "assets", "favicon.svg"), "w", encoding="utf-8") as f:
         f.write('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" '
                 'fill="#2f54eb"/><path d="M9 22 16 9l7 13M11.6 17.5h8.8" fill="none" stroke="#fff" '
                 'stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>')
-    open(os.path.join(ROOT, ".nojekyll"), "w").close()
+
+
+MARKER = ".built-by-build_site"
+
+
+def prepare_out(out):
+    """Empty the output folder, but only if this script created it."""
+    out = os.path.abspath(out)
+    if os.path.abspath(ROOT) == out or os.path.abspath(ROOT).startswith(out + os.sep):
+        sys.exit(f"Refusing to build into {out}: it contains the course sources.")
+    if os.path.isdir(out) and os.listdir(out):
+        if not os.path.exists(os.path.join(out, MARKER)):
+            sys.exit(f"Refusing to build into {out}: the folder already has files that this script "
+                     f"did not create (no {MARKER} file). Choose an empty or new folder.")
+        shutil.rmtree(out)
+    os.makedirs(out, exist_ok=True)
+    with open(os.path.join(out, MARKER), "w", encoding="utf-8") as f:
+        f.write("This folder is generated by tools/build_site.py in motiur/onlineCourses. "
+                "Edit the sources there and rebuild instead of editing these files.\n")
+    return out
+
+
+def copy_downloads(out, all_sessions):
+    """Copy each course PDF and notebook so the site's download links work on their own."""
+    for c in COURSES:
+        files = [s["rel"] for s in all_sessions[c["n"]]]
+        pdf = course_pdf(c)
+        if pdf:
+            files.append(pdf)
+        for rel in files:
+            dst = os.path.join(out, rel)
+            os.makedirs(os.path.dirname(dst), exist_ok=True)
+            shutil.copy2(os.path.join(ROOT, rel), dst)
 
 
 def main():
-    write_assets()
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--out", required=True,
+                    help="output folder, e.g. ../motiur.github.io/onlineCourses")
+    out = prepare_out(ap.parse_args().out)
+
+    write_assets(out)
     all_sessions = {c["n"]: load_sessions(c) for c in COURSES}
-    out_root = os.path.join(ROOT, "courses")
-    if os.path.isdir(out_root):
-        shutil.rmtree(out_root)
     for c in COURSES:
-        out = os.path.join(out_root, slug(c))
-        os.makedirs(out, exist_ok=True)
+        cdir = os.path.join(out, "courses", slug(c))
+        os.makedirs(cdir, exist_ok=True)
         sessions = all_sessions[c["n"]]
-        with open(os.path.join(out, "index.html"), "w", encoding="utf-8") as f:
+        with open(os.path.join(cdir, "index.html"), "w", encoding="utf-8") as f:
             f.write(build_course(c, sessions))
         for i in range(len(sessions)):
-            with open(os.path.join(out, sessions[i]["page"]), "w", encoding="utf-8") as f:
+            with open(os.path.join(cdir, sessions[i]["page"]), "w", encoding="utf-8") as f:
                 f.write(build_session(c, sessions, i))
-    with open(os.path.join(ROOT, "index.html"), "w", encoding="utf-8") as f:
+    with open(os.path.join(out, "index.html"), "w", encoding="utf-8") as f:
         f.write(build_home(all_sessions))
+    copy_downloads(out, all_sessions)
     n = sum(len(v) for v in all_sessions.values())
-    print(f"Built home page, {len(COURSES)} course pages and {n} notebook pages.")
+    print(f"Built home page, {len(COURSES)} course pages and {n} notebook pages in {out}.")
 
 
 if __name__ == "__main__":
