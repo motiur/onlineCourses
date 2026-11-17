@@ -242,7 +242,7 @@ svg { width: 1em; height: 1em; flex: none; }
 .notebook { min-width: 0; max-width: 860px; }
 .notebook .prompt { display: none; }
 .notebook .cell { margin: 0 0 18px; }
-.notebook .text_cell_render { font-size: 16px; line-height: 1.7; }
+.notebook .text_cell_render { font-size: 16px; line-height: 1.7; overflow-wrap: break-word; }
 .notebook .text_cell_render > :first-child { margin-top: 0; }
 .notebook h1, .notebook h2, .notebook h3, .notebook h4 { margin: 36px 0 12px; }
 .notebook h2 { font-size: 24px; }
