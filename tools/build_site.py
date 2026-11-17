@@ -398,6 +398,7 @@ def readme_html(c):
         return ""
     text = open(p, encoding="utf-8").read()
     text = re.sub(r"^# .*\n+", "", text)  # drop the title line
+    text = text.split("\n## ")[0]  # the side panel shows only the opening notes, not detailed sections
     return md(text)
 
 
