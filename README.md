@@ -2,6 +2,8 @@
 
 Materials for an AI teaching YouTube channel: eight courses running from beginner level to current research. Each course has 12 sessions, a course document (PDF) and one Jupyter notebook per session (96 notebooks in all).
 
+**Website:** https://motiur.github.io/onlineCourses/
+
 > **Instructor material.** The course documents include quiz answers and assignment solutions, and the Course 8 notebooks include reference solutions at the bottom. Remove these before sharing anything with students or making this repository public.
 
 ## Courses
@@ -42,3 +44,14 @@ The PDFs are exports of the live docs; edit the live versions.
 ## Running a notebook
 
 Upload it to Kaggle Notebooks or Google Colab and run from the top.
+
+## The website
+
+The site (`index.html`, `courses/`, `assets/`) is generated from the course folders by `tools/build_site.py`. After changing a notebook or course, rebuild and commit:
+
+```bash
+pip install nbconvert
+python3 tools/build_site.py
+```
+
+Course titles, summaries and topics shown on the site are set in the `COURSES` list at the top of the script; page styles are in `tools/site.css`. GitHub Pages serves the `main` branch from the repository root.

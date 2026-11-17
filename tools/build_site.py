@@ -1,0 +1,572 @@
+#!/usr/bin/env python3
+"""Build the GitHub Pages site for the AI courses.
+
+Run from the repository root:
+
+    pip install nbconvert
+    python3 tools/build_site.py
+
+It writes index.html, courses/ and assets/ at the repository root. The course
+folders (Course_*/) are the source; nothing in them is changed.
+"""
+from __future__ import annotations
+
+import glob
+import html
+import json
+import os
+import re
+import shutil
+
+import mistune
+import nbformat
+from nbconvert import HTMLExporter
+from pygments.formatters import HtmlFormatter
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+REPO = "motiur/onlineCourses"
+BRANCH = "main"
+SITE_TITLE = "AI Courses"
+TAGLINE = "From first principles to current research"
+
+# ---------------------------------------------------------------------------
+# Course metadata (summaries are taken from the course index)
+# ---------------------------------------------------------------------------
+COURSES = [
+    dict(n=1, folder="Course_1_Geometric_Deep_Learning_and_Graphs",
+         title="Geometric Deep Learning and Graphs", level="Research",
+         track="Research track",
+         summary="Symmetry as the organising idea behind modern architectures: message passing, "
+                 "expressive power, graph transformers, equivariant CNNs and E(3) models for atoms, "
+                 "curved spaces, generative models on graphs, and graph learning in medicine.",
+         topics=["GNNs", "Equivariance", "Graph transformers", "Hyperbolic embeddings", "Graph diffusion"],
+         prereq="Comfort with PyTorch and basic linear algebra."),
+    dict(n=2, folder="Course_2_Privacy_Preserving_ML",
+         title="Privacy-Preserving Machine Learning", level="Research",
+         track="Research track",
+         summary="What models leak and how to stop it: differential privacy from first principles, "
+                 "DP-SGD and accounting, privacy auditing, federated learning and its attacks, private "
+                 "LLM fine-tuning, encrypted inference, unlearning and fairness.",
+         topics=["Differential privacy", "DP-SGD", "Federated learning", "Homomorphic encryption", "Unlearning"],
+         prereq="Course 1 or equivalent deep learning experience."),
+    dict(n=3, folder="Course_3_Large_Language_Models",
+         title="Large Language Models", level="Research",
+         track="Research track",
+         summary="How today's language models are built, trained and evaluated: the modern transformer, "
+                 "tokenization across languages, scaling laws, efficient inference, LoRA and QLoRA, DPO, "
+                 "GRPO and reasoning, agents, multimodality, diffusion LMs and interpretability.",
+         topics=["Transformers", "Scaling laws", "LoRA", "DPO & GRPO", "Agents", "Interpretability"],
+         prereq="Python, PyTorch and the basics of neural networks."),
+    dict(n=4, folder="Course_4_Mathematics_and_AI",
+         title="Mathematics and AI", level="Research",
+         track="Research track",
+         summary="Mathematics for AI and AI for mathematics: groups and representations, steerable kernels, "
+                 "grokking, category theory and lenses, sheaves on graphs, Lean 4, AI theorem proving, "
+                 "autoformalization and AI-driven mathematical discovery.",
+         topics=["Group theory", "Category theory", "Sheaves", "Lean 4", "Theorem proving"],
+         prereq="Undergraduate linear algebra; Course 1 helps."),
+    dict(n=5, folder="Course_5_Winning_Online_AI_Competitions",
+         title="Winning Online AI Competitions", level="Practical",
+         track="Alongside any course",
+         summary="A practical playbook for Kaggle-style contests: choosing a competition, metrics and "
+                 "leaderboards, validation you can trust, leakage, tabular, time-series, vision, LLM and "
+                 "reasoning competitions, ensembling and write-ups, ending in a live-competition capstone.",
+         topics=["Validation", "Gradient boosting", "TTA", "Ensembling", "Kaggle"],
+         prereq="Python and scikit-learn."),
+    dict(n=6, folder="Course_6_From_Beginner_to_an_AI_Research_Lab",
+         title="From Beginner to an AI Research Lab", level="Beginner",
+         track="Start here",
+         summary="The entry course: how research labs work, the math and code you actually use, ML and deep "
+                 "learning from scratch, transformers, reading and reproducing papers, experiments that "
+                 "convince, writing, and getting in through applications, cold emails and interviews.",
+         topics=["Foundations", "Reproducing papers", "Experiments", "Research writing", "Applications"],
+         prereq="None beyond school mathematics and willingness to code."),
+    dict(n=7, folder="Course_7_Building_a_Small_Bangla_Language_Model",
+         title="Building a Small Bangla Language Model", level="Project",
+         track="After Course 6 or 3",
+         summary="Take a 5–30M-parameter Bangla GPT from raw text to a public release: Unicode cleaning, "
+                 "corpus building, tokenizer, model design, training on free GPUs, evaluation, instruction "
+                 "tuning against a LoRA baseline, compression and responsible release.",
+         topics=["Bangla NLP", "Tokenizers", "Pretraining", "Instruction tuning", "Model cards"],
+         prereq="Course 6 or Course 3."),
+    dict(n=8, folder="Course_8_Research_Engineering_Interviews",
+         title="Research Engineering Interviews", level="Career",
+         track="After Course 6",
+         summary="Prepare for research engineering interview loops: coding, tensor fluency, ML from scratch, "
+                 "debugging rounds, fundamentals out loud, estimates, ML system design, research "
+                 "discussions, behavioral rounds and take-homes, ending in a four-round mock loop.",
+         topics=["Coding rounds", "ML from scratch", "Debugging", "System design", "Mock loop"],
+         prereq="Course 6."),
+]
+BY_N = {c["n"]: c for c in COURSES}
+
+
+def esc(s: str) -> str:
+    return html.escape(s, quote=True)
+
+
+def slug(c) -> str:
+    return f"course-{c['n']}"
+
+
+# ---------------------------------------------------------------------------
+# Reading the notebooks
+# ---------------------------------------------------------------------------
+def load_sessions(c):
+    sessions = []
+    for path in sorted(glob.glob(os.path.join(ROOT, c["folder"], "notebooks", "s*.ipynb"))):
+        nb = nbformat.read(path, as_version=4)
+        first = "".join(nb.cells[0].source) if nb.cells else ""
+        m = re.search(r"## Session (\d+): (.*)", first)
+        g = re.search(r"\*\*Goal:\*\* (.*)", first)
+        num = int(m.group(1)) if m else len(sessions) + 1
+        not_run = sum(1 for cell in nb.cells
+                      if cell.cell_type == "code" and "NOT RUN" in "".join(cell.source))
+        code = sum(1 for cell in nb.cells if cell.cell_type == "code")
+        rel = os.path.relpath(path, ROOT).replace(os.sep, "/")
+        sessions.append(dict(
+            num=num,
+            title=m.group(2).strip() if m else os.path.basename(path),
+            goal=g.group(1).strip() if g else "",
+            path=path, rel=rel, nb=nb, not_run=not_run, code=code,
+            page=f"session-{num:02d}.html",
+        ))
+    return sessions
+
+
+def course_pdf(c):
+    pdfs = glob.glob(os.path.join(ROOT, c["folder"], "*.pdf"))
+    return os.path.relpath(pdfs[0], ROOT).replace(os.sep, "/") if pdfs else None
+
+
+def colab_url(rel):
+    return f"https://colab.research.google.com/github/{REPO}/blob/{BRANCH}/{rel}"
+
+
+def kaggle_url(rel):
+    return f"https://www.kaggle.com/kernels/welcome?src=https://github.com/{REPO}/blob/{BRANCH}/{rel}"
+
+
+def github_url(rel):
+    return f"https://github.com/{REPO}/blob/{BRANCH}/{rel}"
+
+
+# ---------------------------------------------------------------------------
+# Page chrome
+# ---------------------------------------------------------------------------
+ICON = ('<svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="currentColor"/>'
+        '<path d="M9 22 16 9l7 13M11.6 17.5h8.8" fill="none" stroke="var(--bg)" stroke-width="2.6" '
+        'stroke-linecap="round" stroke-linejoin="round"/></svg>')
+
+GH_ICON = ('<svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 '
+           '3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23'
+           '-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87'
+           '.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64'
+           '-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 '
+           '2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 '
+           '8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>')
+
+
+def page(title, body, depth, description="", extra_head=""):
+    up = "../" * depth
+    full = f"{title} · {SITE_TITLE}" if title != SITE_TITLE else f"{SITE_TITLE} · {TAGLINE}"
+    return f"""<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{esc(full)}</title>
+<meta name="description" content="{esc(description or TAGLINE)}">
+<meta property="og:title" content="{esc(full)}">
+<meta property="og:description" content="{esc(description or TAGLINE)}">
+<link rel="icon" href="{up}assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{up}assets/site.css">
+{extra_head}
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="{up}index.html">{ICON}<span>{SITE_TITLE}</span></a>
+    <nav class="top-nav" aria-label="Main">
+      <a href="{up}index.html#courses">Courses</a>
+      <a href="{up}index.html#paths">Learning paths</a>
+      <a href="{up}index.html#notebooks">Notebooks</a>
+      <a class="gh" href="https://github.com/{REPO}" aria-label="Source on GitHub">{GH_ICON}<span>GitHub</span></a>
+    </nav>
+  </div>
+</header>
+<main id="main">
+{body}
+</main>
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <div>
+      <a class="brand small" href="{up}index.html">{ICON}<span>{SITE_TITLE}</span></a>
+      <p>{TAGLINE}. Eight free courses with hands-on notebooks.</p>
+    </div>
+    <div class="footer-links">
+      <a href="https://github.com/{REPO}">Source on GitHub</a>
+      <a href="https://github.com/motiur">github.com/motiur</a>
+    </div>
+  </div>
+</footer>
+</body>
+</html>
+"""
+
+
+def btn(href, label, kind="ghost", external=False, icon=""):
+    ext = ' target="_blank" rel="noopener"' if external else ""
+    return f'<a class="btn btn-{kind}" href="{esc(href)}"{ext}>{icon}{esc(label)}</a>'
+
+
+ICONS = {
+    "read": '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 4.5h5a2 2 0 0 1 2 2V16a1.5 1.5 0 0 0-1.5-1.5H3zM17 4.5h-5a2 2 0 0 0-2 2V16a1.5 1.5 0 0 1 1.5-1.5H17z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>',
+    "play": '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6 4.5v11l9-5.5z" fill="currentColor"/></svg>',
+    "down": '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3.5v9m0 0-3.5-3.5M10 12.5l3.5-3.5M4 15.5h12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    "doc": '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 2.5h6.5L15 6v11.5H5zM11.5 2.5V6H15M7.5 10h5M7.5 13h5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>',
+    "arrow": '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11m0 0-4.5-4.5M15 10l-4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+}
+
+
+def level_badge(level):
+    return f'<span class="badge badge-{level.lower()}">{esc(level)}</span>'
+
+
+# ---------------------------------------------------------------------------
+# Home page
+# ---------------------------------------------------------------------------
+def build_home(all_sessions):
+    total_sessions = sum(len(v) for v in all_sessions.values())
+    order = [6, 1, 3, 2, 4, 5, 7, 8]
+    cards = []
+    for n in order:
+        c = BY_N[n]
+        chips = "".join(f"<li>{esc(t)}</li>" for t in c["topics"])
+        cards.append(f"""
+      <a class="course-card" href="courses/{slug(c)}/index.html">
+        <div class="card-top">
+          <span class="course-num">Course {c['n']}</span>
+          {level_badge(c['level'])}
+        </div>
+        <h3>{esc(c['title'])}</h3>
+        <p>{esc(c['summary'])}</p>
+        <ul class="chips">{chips}</ul>
+        <div class="card-foot"><span>{len(all_sessions[n])} sessions · {len(all_sessions[n])} notebooks</span><span class="go">View course {ICONS['arrow']}</span></div>
+      </a>""")
+
+    def node(n, note=""):
+        c = BY_N[n]
+        return (f'<a class="path-node lvl-{c["level"].lower()}" href="courses/{slug(c)}/index.html">'
+                f'<span class="pn-num">{c["n"]}</span><span class="pn-title">{esc(c["title"])}</span>'
+                f'{f"<span class=pn-note>{esc(note)}</span>" if note else ""}</a>')
+
+    body = f"""
+<section class="hero">
+  <div class="wrap">
+    <p class="eyebrow">Free · {len(COURSES)} courses · {total_sessions} hands-on sessions</p>
+    <h1>Learn AI from first principles<br>to current research</h1>
+    <p class="lead">Structured video courses with a runnable notebook for every session. Start as a beginner,
+      work through the research topics labs care about today, and finish with a project and interview practice.</p>
+    <div class="hero-cta">
+      {btn('courses/course-6/index.html', 'Start with Course 6', 'primary', icon=ICONS['arrow'])}
+      {btn('#courses', 'Browse all courses', 'ghost')}
+    </div>
+    <dl class="stats">
+      <div><dt>Courses</dt><dd>{len(COURSES)}</dd></div>
+      <div><dt>Sessions</dt><dd>{total_sessions}</dd></div>
+      <div><dt>Notebooks</dt><dd>{total_sessions}</dd></div>
+      <div><dt>Cost</dt><dd>Free</dd></div>
+    </dl>
+  </div>
+</section>
+
+<section id="paths" class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Learning paths</h2>
+      <p>A suggested order. Every course stands on its own, so jump in wherever you are.</p>
+    </div>
+    <div class="paths">
+      <div class="path-col">
+        <h3><span class="step">1</span>Start here</h3>
+        {node(6, "Foundations, papers, experiments and applying to labs")}
+      </div>
+      <div class="path-col">
+        <h3><span class="step">2</span>Research track</h3>
+        <div class="path-chain">
+          {node(1)}{node(3)}{node(2)}{node(4)}
+        </div>
+      </div>
+      <div class="path-col">
+        <h3><span class="step">3</span>Build and get hired</h3>
+        {node(7, "After Course 6 or 3")}
+        {node(8, "After Course 6")}
+        {node(5, "Practical · take alongside any course")}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="courses" class="section alt">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>All courses</h2>
+      <p>Twelve sessions each. Every session has three video segments, a lab notebook, a quiz and an assignment.</p>
+    </div>
+    <div class="course-grid">{''.join(cards)}
+    </div>
+  </div>
+</section>
+
+<section id="notebooks" class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>How the notebooks work</h2>
+      <p>Read any notebook in the browser, or open it in a free cloud environment with one click.</p>
+    </div>
+    <div class="features">
+      <div class="feature">
+        <div class="f-icon">{ICONS['play']}</div>
+        <h3>One click to run</h3>
+        <p>Every session has <em>Open in Colab</em> and <em>Open in Kaggle</em> links. No installation needed; run the cells from the top.</p>
+      </div>
+      <div class="feature">
+        <div class="f-icon">{ICONS['read']}</div>
+        <h3>Small, honest examples</h3>
+        <p>Runnable cells use small built-in or synthetic data and finish in a minute or two on a CPU. Their numbers show how a method behaves; they are not benchmarks.</p>
+      </div>
+      <div class="feature">
+        <div class="f-icon">{ICONS['doc']}</div>
+        <h3>Clearly labelled</h3>
+        <p>Cells marked <code>NOT RUN</code> need a GPU, a download or an account. Cells marked <code>TODO</code> are exercises for you to complete.</p>
+      </div>
+    </div>
+  </div>
+</section>
+"""
+    return page(SITE_TITLE, body, 0,
+                description=f"{len(COURSES)} free AI courses with {total_sessions} runnable notebooks, "
+                            "from beginner foundations to current research.")
+
+
+# ---------------------------------------------------------------------------
+# Course pages
+# ---------------------------------------------------------------------------
+md = mistune.create_markdown(escape=True)
+
+
+def readme_html(c):
+    p = os.path.join(ROOT, c["folder"], "notebooks", "README.md")
+    if not os.path.exists(p):
+        return ""
+    text = open(p, encoding="utf-8").read()
+    text = re.sub(r"^# .*\n+", "", text)  # drop the title line
+    return md(text)
+
+
+def build_course(c, sessions):
+    pdf = course_pdf(c)
+    rows = []
+    for s in sessions:
+        flag = (f'<span class="flag" title="Cells that need a GPU, a download or an account">'
+                f'{s["not_run"]} NOT RUN cell{"s" if s["not_run"] != 1 else ""}</span>') if s["not_run"] else \
+               '<span class="flag ok">Runs fully on CPU</span>'
+        rows.append(f"""
+      <li class="session">
+        <div class="s-num">{s['num']:02d}</div>
+        <div class="s-body">
+          <h3><a href="{s['page']}">{esc(s['title'])}</a></h3>
+          <p>{esc(s['goal'][:1].upper() + s['goal'][1:])}</p>
+          <div class="s-actions">
+            {btn(s['page'], 'Read notebook', 'soft', icon=ICONS['read'])}
+            {btn(colab_url(s['rel']), 'Colab', 'ghost', True, ICONS['play'])}
+            {btn(kaggle_url(s['rel']), 'Kaggle', 'ghost', True, ICONS['play'])}
+            {btn('../../' + s['rel'], '.ipynb', 'ghost', icon=ICONS['down'])}
+            {flag}
+          </div>
+        </div>
+      </li>""")
+
+    prev_c = BY_N.get(c["n"] - 1)
+    next_c = BY_N.get(c["n"] + 1)
+    pager = '<nav class="pager" aria-label="Other courses">'
+    pager += (f'<a class="prev" href="../{slug(prev_c)}/index.html"><span>Previous course</span>'
+              f'{esc(prev_c["title"])}</a>') if prev_c else "<span></span>"
+    pager += (f'<a class="next" href="../{slug(next_c)}/index.html"><span>Next course</span>'
+              f'{esc(next_c["title"])}</a>') if next_c else "<span></span>"
+    pager += "</nav>"
+
+    chips = "".join(f"<li>{esc(t)}</li>" for t in c["topics"])
+    body = f"""
+<section class="course-hero">
+  <div class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="../../index.html">Courses</a><span>/</span><span>Course {c['n']}</span></nav>
+    <div class="ch-meta"><span class="course-num">Course {c['n']}</span>{level_badge(c['level'])}<span class="track">{esc(c['track'])}</span></div>
+    <h1>{esc(c['title'])}</h1>
+    <p class="lead">{esc(c['summary'])}</p>
+    <ul class="chips">{chips}</ul>
+    <div class="hero-cta">
+      {btn(sessions[0]['page'], 'Start session 1', 'primary', icon=ICONS['arrow'])}
+      {btn('../../' + pdf, 'Course document (PDF)', 'ghost', icon=ICONS['doc']) if pdf else ''}
+      {btn('https://github.com/' + REPO + '/tree/' + BRANCH + '/' + c['folder'], 'Folder on GitHub', 'ghost', True, GH_ICON)}
+    </div>
+  </div>
+</section>
+
+<section class="section tight">
+  <div class="wrap course-layout">
+    <div>
+      <h2 class="list-title">Sessions</h2>
+      <ol class="sessions">{''.join(rows)}
+      </ol>
+    </div>
+    <aside class="side">
+      <div class="side-card">
+        <h3>At a glance</h3>
+        <dl>
+          <dt>Sessions</dt><dd>{len(sessions)}</dd>
+          <dt>Level</dt><dd>{esc(c['level'])}</dd>
+          <dt>Prerequisites</dt><dd>{esc(c['prereq'])}</dd>
+          <dt>Each session</dt><dd>3 video segments, a lab, a quiz and an assignment</dd>
+        </dl>
+      </div>
+      <div class="side-card prose small">
+        <h3>Before you start</h3>
+        {readme_html(c)}
+      </div>
+    </aside>
+  </div>
+  <div class="wrap">{pager}</div>
+</section>
+"""
+    return page(c["title"], body, 2, description=c["summary"])
+
+
+# ---------------------------------------------------------------------------
+# Notebook pages
+# ---------------------------------------------------------------------------
+exporter = HTMLExporter(template_name="basic")
+exporter.exclude_input_prompt = True
+exporter.exclude_output_prompt = True
+
+MATHJAX = """<script>
+window.MathJax = {tex: {inlineMath: [['$','$'], ['\\\\(','\\\\)']], displayMath: [['$$','$$'], ['\\\\[','\\\\]']], processEscapes: true},
+  options: {skipHtmlTags: ['script','noscript','style','textarea','pre','code']}};
+</script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-chtml.min.js"></script>"""
+
+
+def strip_header(nb):
+    nb = nbformat.from_dict(json.loads(json.dumps(nb)))  # deep copy
+    if nb.cells and nb.cells[0].cell_type == "markdown":
+        lines = nb.cells[0].source.splitlines()
+        kept = [ln for ln in lines
+                if not ln.startswith("# Course") and not ln.startswith("## Session")
+                and not ln.startswith("**Goal:**")]
+        nb.cells[0].source = "\n".join(kept).strip()
+        if not nb.cells[0].source:
+            nb.cells.pop(0)
+    return nb
+
+
+def build_session(c, sessions, i):
+    s = sessions[i]
+    nb_html, _ = exporter.from_notebook_node(strip_header(s["nb"]))
+    prev_s = sessions[i - 1] if i > 0 else None
+    next_s = sessions[i + 1] if i + 1 < len(sessions) else None
+    pager = '<nav class="pager" aria-label="Other sessions">'
+    pager += (f'<a class="prev" href="{prev_s["page"]}"><span>Previous session</span>'
+              f'{prev_s["num"]:02d} · {esc(prev_s["title"])}</a>') if prev_s else \
+             f'<a class="prev" href="index.html"><span>Back to</span>Course {c["n"]} overview</a>'
+    pager += (f'<a class="next" href="{next_s["page"]}"><span>Next session</span>'
+              f'{next_s["num"]:02d} · {esc(next_s["title"])}</a>') if next_s else \
+             f'<a class="next" href="index.html"><span>Finished</span>Course {c["n"]} overview</a>'
+    pager += "</nav>"
+
+    toc = "".join(
+        f'<li{" class=current" if t is s else ""}><a href="{t["page"]}"><span>{t["num"]:02d}</span>{esc(t["title"])}</a></li>'
+        for t in sessions)
+
+    goal = s["goal"][:1].upper() + s["goal"][1:]
+    body = f"""
+<section class="nb-hero">
+  <div class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="../../index.html">Courses</a><span>/</span>
+      <a href="index.html">Course {c['n']}: {esc(c['title'])}</a><span>/</span><span>Session {s['num']}</span></nav>
+    <p class="eyebrow">Session {s['num']:02d} of {len(sessions)}</p>
+    <h1>{esc(s['title'])}</h1>
+    <p class="lead"><strong>Goal:</strong> {esc(goal)}</p>
+    <div class="hero-cta">
+      {btn(colab_url(s['rel']), 'Open in Colab', 'primary', True, ICONS['play'])}
+      {btn(kaggle_url(s['rel']), 'Open in Kaggle', 'ghost', True, ICONS['play'])}
+      {btn('../../' + s['rel'], 'Download .ipynb', 'ghost', icon=ICONS['down'])}
+      {btn(github_url(s['rel']), 'View on GitHub', 'ghost', True, GH_ICON)}
+    </div>
+  </div>
+</section>
+<section class="section tight">
+  <div class="wrap nb-layout">
+    <aside class="nb-toc" aria-label="Sessions in this course">
+      <p class="toc-title"><a href="index.html">Course {c['n']}</a></p>
+      <ol>{toc}</ol>
+    </aside>
+    <article class="notebook prose">
+      {nb_html}
+      {pager}
+    </article>
+  </div>
+</section>
+"""
+    return page(f"{s['title']} — Course {c['n']}", body, 2, description=goal, extra_head=MATHJAX)
+
+
+# ---------------------------------------------------------------------------
+# Assets
+# ---------------------------------------------------------------------------
+def write_assets():
+    os.makedirs(os.path.join(ROOT, "assets"), exist_ok=True)
+    css_src = os.path.join(os.path.dirname(os.path.abspath(__file__)), "site.css")
+    light = HtmlFormatter(style="friendly").get_style_defs(".highlight")
+    dark = HtmlFormatter(style="github-dark").get_style_defs(":root:not([data-theme=light]) .highlight")
+    with open(os.path.join(ROOT, "assets", "site.css"), "w", encoding="utf-8") as f:
+        f.write(open(css_src, encoding="utf-8").read())
+        f.write("\n/* ---- code highlighting (generated) ---- */\n")
+        f.write(light.replace(".highlight  { background: #f0f0f0; }", ""))
+        f.write("\n@media (prefers-color-scheme: dark) {\n")
+        f.write(dark)
+        f.write("\n}\n.highlight, .highlight pre { background: transparent !important; }\n")
+    with open(os.path.join(ROOT, "assets", "favicon.svg"), "w", encoding="utf-8") as f:
+        f.write('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" '
+                'fill="#2f54eb"/><path d="M9 22 16 9l7 13M11.6 17.5h8.8" fill="none" stroke="#fff" '
+                'stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>')
+    open(os.path.join(ROOT, ".nojekyll"), "w").close()
+
+
+def main():
+    write_assets()
+    all_sessions = {c["n"]: load_sessions(c) for c in COURSES}
+    out_root = os.path.join(ROOT, "courses")
+    if os.path.isdir(out_root):
+        shutil.rmtree(out_root)
+    for c in COURSES:
+        out = os.path.join(out_root, slug(c))
+        os.makedirs(out, exist_ok=True)
+        sessions = all_sessions[c["n"]]
+        with open(os.path.join(out, "index.html"), "w", encoding="utf-8") as f:
+            f.write(build_course(c, sessions))
+        for i in range(len(sessions)):
+            with open(os.path.join(out, sessions[i]["page"]), "w", encoding="utf-8") as f:
+                f.write(build_session(c, sessions, i))
+    with open(os.path.join(ROOT, "index.html"), "w", encoding="utf-8") as f:
+        f.write(build_home(all_sessions))
+    n = sum(len(v) for v in all_sessions.values())
+    print(f"Built home page, {len(COURSES)} course pages and {n} notebook pages.")
+
+
+if __name__ == "__main__":
+    main()
