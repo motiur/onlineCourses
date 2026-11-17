@@ -106,6 +106,25 @@ COURSES = [
                  "discussions, behavioral rounds and take-homes, ending in a four-round mock loop.",
          topics=["Coding rounds", "ML from scratch", "Debugging", "System design", "Mock loop"],
          prereq="Course 6."),
+    dict(n=9, folder="Course_9_Ten_Years_of_Deep_Learning_Ideas",
+         title="Ten Years of Deep Learning Ideas", level="Core",
+         track="After Course 6",
+         summary="The big deep learning ideas of 2016–2026 that the other courses don't teach: residuals, "
+                 "normalization and µP, modern optimizers, the generalization puzzles, vision transformers, "
+                 "self-supervised and in-context learning, VAEs to GANs, diffusion and flow matching, deep RL, "
+                 "neural fields, and robustness and calibration.",
+         topics=["Normalization & µP", "Optimizers", "Self-supervised learning", "Diffusion & flow matching",
+                 "Deep RL", "Neural fields"],
+         prereq="Course 6 (PyTorch training loops and basic deep learning)."),
+    dict(n=10, folder="Course_10_AI_Research_in_2026",
+         title="AI Research in 2026", level="Current",
+         track="Stay current · checked November 2026",
+         summary="What AI research found from January to November 2026: agents' time horizons, RL for "
+                 "reasoning, multi-turn reliability, diffusion language models, transformer expressivity, "
+                 "Polar Express and Muon, provable grokking, high-accuracy sampling, deception probes, AI on "
+                 "Erdős problems and 4D reconstruction, each with a toy lab.",
+         topics=["Agents", "RL for reasoning", "Diffusion LMs", "Theory", "Safety", "AI for maths"],
+         prereq="Course 6; Course 9 and Course 3 recommended."),
 ]
 BY_N = {c["n"]: c for c in COURSES}
 
@@ -215,7 +234,7 @@ def page(title, body, depth, description="", extra_head=""):
   <div class="wrap footer-inner">
     <div>
       <a class="brand small" href="{up}index.html">{ICON}<span>{SITE_TITLE}</span></a>
-      <p>{TAGLINE}. Eight free courses with hands-on notebooks.</p>
+      <p>{TAGLINE}. {len(COURSES)} free courses with hands-on notebooks.</p>
     </div>
     <div class="footer-links">
       <a href="https://github.com/{REPO}">Source on GitHub</a>
@@ -252,7 +271,7 @@ def level_badge(level):
 # ---------------------------------------------------------------------------
 def build_home(all_sessions):
     total_sessions = sum(len(v) for v in all_sessions.values())
-    order = [6, 1, 3, 2, 4, 5, 7, 8]
+    order = [6, 9, 1, 3, 2, 4, 10, 7, 8, 5]
     cards = []
     for n in order:
         c = BY_N[n]
@@ -281,7 +300,8 @@ def build_home(all_sessions):
     <p class="eyebrow">Free · {len(COURSES)} courses · {total_sessions} hands-on sessions</p>
     <h1>Learn AI from first principles<br>to current research</h1>
     <p class="lead">Structured video courses with a runnable notebook for every session. Start as a beginner,
-      work through the research topics labs care about today, and finish with a project and interview practice.</p>
+      learn the decade's core ideas, work through the research topics labs care about today, catch up on this
+      year's results, and finish with a project and interview practice.</p>
     <div class="hero-cta">
       {btn('courses/course-6/index.html', 'Start with Course 6', 'primary', icon=ICONS['arrow'])}
       {btn('#courses', 'Browse all courses', 'ghost')}
@@ -305,11 +325,13 @@ def build_home(all_sessions):
       <div class="path-col">
         <h3><span class="step">1</span>Start here</h3>
         {node(6, "Foundations, papers, experiments and applying to labs")}
+        {node(9, "The decade's core ideas, after Course 6")}
       </div>
       <div class="path-col">
         <h3><span class="step">2</span>Research track</h3>
         <div class="path-chain">
           {node(1)}{node(3)}{node(2)}{node(4)}
+          {node(10, "Stay current · checked November 2026")}
         </div>
       </div>
       <div class="path-col">

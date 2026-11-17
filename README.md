@@ -1,10 +1,10 @@
 # onlineCourses
 
-Materials for an AI teaching YouTube channel: eight courses running from beginner level to current research. Each course has 12 sessions, a course document (PDF) and one Jupyter notebook per session (96 notebooks in all).
+Materials for an AI teaching YouTube channel: ten courses running from beginner level to current research. Each course has 12 sessions, a course document (PDF) and one Jupyter notebook per session (120 notebooks in all).
 
 **Website:** https://motiur.github.io/onlineCourses/
 
-> **Instructor material.** The course documents include quiz answers and assignment solutions, and the Course 8 notebooks include reference solutions at the bottom. Remove these before sharing anything with students or making this repository public.
+> **Instructor material.** The course documents include quiz answers and assignment solutions, and the Course 8 notebooks include reference solutions at the bottom.
 
 ## Courses
 
@@ -18,13 +18,16 @@ Materials for an AI teaching YouTube channel: eight courses running from beginne
 | 6 | From Beginner to an AI Research Lab | [Course_6_From_Beginner_to_an_AI_Research_Lab](Course_6_From_Beginner_to_an_AI_Research_Lab) |
 | 7 | Building a Small Bangla Language Model | [Course_7_Building_a_Small_Bangla_Language_Model](Course_7_Building_a_Small_Bangla_Language_Model) |
 | 8 | Research Engineering Interviews | [Course_8_Research_Engineering_Interviews](Course_8_Research_Engineering_Interviews) |
+| 9 | Ten Years of Deep Learning Ideas | [Course_9_Ten_Years_of_Deep_Learning_Ideas](Course_9_Ten_Years_of_Deep_Learning_Ideas) |
+| 10 | AI Research in 2026 | [Course_10_AI_Research_in_2026](Course_10_AI_Research_in_2026) |
 
 Each course folder contains:
 
 - `*_course_document.pdf`: session content (three video segments per session with pause-and-try questions, a lab, a quiz, a misconception to address, answers and sources; Courses 6 to 8 also have talking pointers, lab guides and graded assignments).
 - `notebooks/`: `s01_...` to `s12_...`, plus a `README.md` saying which cells were run and any extra `pip install` needed.
+- Courses 9 and 10 also have `course_document.md`, the Markdown source of their PDF. Edit it, then rebuild the PDF with `python3 tools/build_course_pdf.py <course folder>`. Their notebooks are saved with their outputs, so the numbers can be read without running anything.
 
-Suggested order: Course 6 is the entry course for beginners. Then Course 1, 3, 2, 4. Course 5 can run alongside any of them. Course 7 follows Course 6 (or 3), and Course 8 follows Course 6.
+Suggested order: Course 6 is the entry course for beginners, and Course 9 follows it with the decade's core deep learning ideas. Then Course 1, 3, 2, 4, and Course 10 to catch up on 2026 research. Course 5 can run alongside any of them. Course 7 follows Course 6 (or 3), and Course 8 follows Course 6.
 
 ## Planning
 
@@ -32,7 +35,7 @@ Suggested order: Course 6 is the entry course for beginners. Then Course 1, 3, 2
 - [planning/00_Syllabus_Courses_1-4.pdf](planning/00_Syllabus_Courses_1-4.pdf): syllabi for Courses 1 to 4.
 - [planning/course-index.md](planning/course-index.md): index of the live docs, notebook notes and open items.
 
-The PDFs are exports of the live docs; edit the live versions.
+The PDFs for Courses 1–8 are exports of the live docs; edit the live versions. Courses 9 and 10 are edited as Markdown in this repository.
 
 ## How the notebooks were checked
 
