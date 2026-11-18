@@ -42,47 +42,7 @@ TAGLINE = "From first principles to current research"
 # Course metadata (summaries are taken from the course index)
 # ---------------------------------------------------------------------------
 COURSES = [
-    dict(n=1, folder="Course_1_Geometric_Deep_Learning_and_Graphs",
-         title="Geometric Deep Learning and Graphs", level="Research",
-         track="Research track",
-         summary="Symmetry as the organising idea behind modern architectures: message passing, "
-                 "expressive power, graph transformers, equivariant CNNs and E(3) models for atoms, "
-                 "curved spaces, generative models on graphs, and graph learning in medicine.",
-         topics=["GNNs", "Equivariance", "Graph transformers", "Hyperbolic embeddings", "Graph diffusion"],
-         prereq="Comfort with PyTorch and basic linear algebra."),
-    dict(n=2, folder="Course_2_Privacy_Preserving_ML",
-         title="Privacy-Preserving Machine Learning", level="Research",
-         track="Research track",
-         summary="What models leak and how to stop it: differential privacy from first principles, "
-                 "DP-SGD and accounting, privacy auditing, federated learning and its attacks, private "
-                 "LLM fine-tuning, encrypted inference, unlearning and fairness.",
-         topics=["Differential privacy", "DP-SGD", "Federated learning", "Homomorphic encryption", "Unlearning"],
-         prereq="Course 1 or equivalent deep learning experience."),
-    dict(n=3, folder="Course_3_Large_Language_Models",
-         title="Large Language Models", level="Research",
-         track="Research track",
-         summary="How today's language models are built, trained and evaluated: the modern transformer, "
-                 "tokenization across languages, scaling laws, efficient inference, LoRA and QLoRA, DPO, "
-                 "GRPO and reasoning, agents, multimodality, diffusion LMs and interpretability.",
-         topics=["Transformers", "Scaling laws", "LoRA", "DPO & GRPO", "Agents", "Interpretability"],
-         prereq="Python, PyTorch and the basics of neural networks."),
-    dict(n=4, folder="Course_4_Mathematics_and_AI",
-         title="Mathematics and AI", level="Research",
-         track="Research track",
-         summary="Mathematics for AI and AI for mathematics: groups and representations, steerable kernels, "
-                 "grokking, category theory and lenses, sheaves on graphs, Lean 4, AI theorem proving, "
-                 "autoformalization and AI-driven mathematical discovery.",
-         topics=["Group theory", "Category theory", "Sheaves", "Lean 4", "Theorem proving"],
-         prereq="Undergraduate linear algebra; Course 1 helps."),
-    dict(n=5, folder="Course_5_Winning_Online_AI_Competitions",
-         title="Winning Online AI Competitions", level="Practical",
-         track="Alongside any course",
-         summary="A practical playbook for Kaggle-style contests: choosing a competition, metrics and "
-                 "leaderboards, validation you can trust, leakage, tabular, time-series, vision, LLM and "
-                 "reasoning competitions, ensembling and write-ups, ending in a live-competition capstone.",
-         topics=["Validation", "Gradient boosting", "TTA", "Ensembling", "Kaggle"],
-         prereq="Python and scikit-learn."),
-    dict(n=6, folder="Course_6_From_Beginner_to_an_AI_Research_Lab",
+    dict(n=1, folder="Course_1_From_Beginner_to_an_AI_Research_Lab",
          title="From Beginner to an AI Research Lab", level="Beginner",
          track="Start here",
          summary="The entry course: how research labs work, the math and code you actually use, ML and deep "
@@ -90,33 +50,64 @@ COURSES = [
                  "convince, writing, and getting in through applications, cold emails and interviews.",
          topics=["Foundations", "Reproducing papers", "Experiments", "Research writing", "Applications"],
          prereq="None beyond school mathematics and willingness to code."),
-    dict(n=7, folder="Course_7_Building_a_Small_Bangla_Language_Model",
+    dict(n=2, folder="Course_2_Ten_Years_of_Deep_Learning_Ideas",
+         title="Ten Years of Deep Learning Ideas", level="Core",
+         track="Foundations · after Course 1",
+         summary="The big deep learning ideas of 2016–2026 that the other courses don't teach: residuals, "
+                 "normalization and µP, modern optimizers, the generalization puzzles, vision transformers, "
+                 "self-supervised and in-context learning, VAEs to GANs, diffusion and flow matching, deep RL,"
+                 " neural fields, and robustness and calibration.",
+         topics=["Normalization & µP", "Optimizers", "Self-supervised learning", "Diffusion & flow matching", "Deep RL", "Neural fields"],
+         prereq="Course 1 (PyTorch training loops and basic deep learning)."),
+    dict(n=3, folder="Course_3_Large_Language_Models",
+         title="Large Language Models", level="Research",
+         track="Build · after Course 2",
+         summary="How today's language models are built, trained and evaluated: the modern transformer, "
+                 "tokenization across languages, scaling laws, efficient inference, LoRA and QLoRA, DPO, GRPO "
+                 "and reasoning, agents, multimodality, diffusion LMs and interpretability.",
+         topics=["Transformers", "Scaling laws", "LoRA", "DPO & GRPO", "Agents", "Interpretability"],
+         prereq="Python, PyTorch and the basics of neural networks; Course 2 helps."),
+    dict(n=4, folder="Course_4_Building_a_Small_Bangla_Language_Model",
          title="Building a Small Bangla Language Model", level="Project",
-         track="After Course 6 or 3",
+         track="Build · a project after Course 3",
          summary="Take a 5–30M-parameter Bangla GPT from raw text to a public release: Unicode cleaning, "
                  "corpus building, tokenizer, model design, training on free GPUs, evaluation, instruction "
                  "tuning against a LoRA baseline, compression and responsible release.",
          topics=["Bangla NLP", "Tokenizers", "Pretraining", "Instruction tuning", "Model cards"],
-         prereq="Course 6 or Course 3."),
-    dict(n=8, folder="Course_8_Research_Engineering_Interviews",
-         title="Research Engineering Interviews", level="Career",
-         track="After Course 6",
-         summary="Prepare for research engineering interview loops: coding, tensor fluency, ML from scratch, "
-                 "debugging rounds, fundamentals out loud, estimates, ML system design, research "
-                 "discussions, behavioral rounds and take-homes, ending in a four-round mock loop.",
-         topics=["Coding rounds", "ML from scratch", "Debugging", "System design", "Mock loop"],
-         prereq="Course 6."),
-    dict(n=9, folder="Course_9_Ten_Years_of_Deep_Learning_Ideas",
-         title="Ten Years of Deep Learning Ideas", level="Core",
-         track="After Course 6",
-         summary="The big deep learning ideas of 2016–2026 that the other courses don't teach: residuals, "
-                 "normalization and µP, modern optimizers, the generalization puzzles, vision transformers, "
-                 "self-supervised and in-context learning, VAEs to GANs, diffusion and flow matching, deep RL, "
-                 "neural fields, and robustness and calibration.",
-         topics=["Normalization & µP", "Optimizers", "Self-supervised learning", "Diffusion & flow matching",
-                 "Deep RL", "Neural fields"],
-         prereq="Course 6 (PyTorch training loops and basic deep learning)."),
-    dict(n=10, folder="Course_10_AI_Research_in_2026",
+         prereq="Course 3, or at least Course 1."),
+    dict(n=5, folder="Course_5_Winning_Online_AI_Competitions",
+         title="Winning Online AI Competitions", level="Practical",
+         track="Build · can run alongside other courses",
+         summary="A practical playbook for Kaggle-style contests: choosing a competition, metrics and "
+                 "leaderboards, validation you can trust, leakage, tabular, time-series, vision, LLM and "
+                 "reasoning competitions, ensembling and write-ups, ending in a live-competition capstone.",
+         topics=["Validation", "Gradient boosting", "TTA", "Ensembling", "Kaggle"],
+         prereq="Python and scikit-learn; Course 2 helps."),
+    dict(n=6, folder="Course_6_Geometric_Deep_Learning_and_Graphs",
+         title="Geometric Deep Learning and Graphs", level="Research",
+         track="Research track",
+         summary="Symmetry as the organising idea behind modern architectures: message passing, expressive "
+                 "power, graph transformers, equivariant CNNs and E(3) models for atoms, curved spaces, "
+                 "generative models on graphs, and graph learning in medicine.",
+         topics=["GNNs", "Equivariance", "Graph transformers", "Hyperbolic embeddings", "Graph diffusion"],
+         prereq="Comfort with PyTorch and basic linear algebra."),
+    dict(n=7, folder="Course_7_Privacy_Preserving_ML",
+         title="Privacy-Preserving Machine Learning", level="Research",
+         track="Research track",
+         summary="What models leak and how to stop it: differential privacy from first principles, DP-SGD and "
+                 "accounting, privacy auditing, federated learning and its attacks, private LLM fine-tuning, "
+                 "encrypted inference, unlearning and fairness.",
+         topics=["Differential privacy", "DP-SGD", "Federated learning", "Homomorphic encryption", "Unlearning"],
+         prereq="Course 6 or equivalent deep learning experience; Course 3 for session 7."),
+    dict(n=8, folder="Course_8_Mathematics_and_AI",
+         title="Mathematics and AI", level="Research",
+         track="Research track",
+         summary="Mathematics for AI and AI for mathematics: groups and representations, steerable kernels, "
+                 "grokking, category theory and lenses, sheaves on graphs, Lean 4, AI theorem proving, "
+                 "autoformalization and AI-driven mathematical discovery.",
+         topics=["Group theory", "Category theory", "Sheaves", "Lean 4", "Theorem proving"],
+         prereq="Undergraduate linear algebra; Course 6 helps."),
+    dict(n=9, folder="Course_9_AI_Research_in_2026",
          title="AI Research in 2026", level="Current",
          track="Stay current · checked November 2026",
          summary="What AI research found from January to November 2026: agents' time horizons, RL for "
@@ -124,7 +115,15 @@ COURSES = [
                  "Polar Express and Muon, provable grokking, high-accuracy sampling, deception probes, AI on "
                  "Erdős problems and 4D reconstruction, each with a toy lab.",
          topics=["Agents", "RL for reasoning", "Diffusion LMs", "Theory", "Safety", "AI for maths"],
-         prereq="Course 6; Course 9 and Course 3 recommended."),
+         prereq="Course 1; Courses 2 and 3 recommended."),
+    dict(n=10, folder="Course_10_Research_Engineering_Interviews",
+         title="Research Engineering Interviews", level="Career",
+         track="Get hired · any time after Course 1",
+         summary="Prepare for research engineering interview loops: coding, tensor fluency, ML from scratch, "
+                 "debugging rounds, fundamentals out loud, estimates, ML system design, research discussions, "
+                 "behavioral rounds and take-homes, ending in a four-round mock loop.",
+         topics=["Coding rounds", "ML from scratch", "Debugging", "System design", "Mock loop"],
+         prereq="Course 1."),
 ]
 BY_N = {c["n"]: c for c in COURSES}
 
@@ -271,7 +270,7 @@ def level_badge(level):
 # ---------------------------------------------------------------------------
 def build_home(all_sessions):
     total_sessions = sum(len(v) for v in all_sessions.values())
-    order = [6, 9, 1, 3, 2, 4, 10, 7, 8, 5]
+    order = [c["n"] for c in COURSES]
     cards = []
     for n in order:
         c = BY_N[n]
@@ -303,7 +302,7 @@ def build_home(all_sessions):
       learn the decade's core ideas, work through the research topics labs care about today, catch up on this
       year's results, and finish with a project and interview practice.</p>
     <div class="hero-cta">
-      {btn('courses/course-6/index.html', 'Start with Course 6', 'primary', icon=ICONS['arrow'])}
+      {btn('courses/course-1/index.html', 'Start with Course 1', 'primary', icon=ICONS['arrow'])}
       {btn('#courses', 'Browse all courses', 'ghost')}
     </div>
     <dl class="stats">
@@ -323,22 +322,26 @@ def build_home(all_sessions):
     </div>
     <div class="paths">
       <div class="path-col">
-        <h3><span class="step">1</span>Start here</h3>
-        {node(6, "Foundations, papers, experiments and applying to labs")}
-        {node(9, "The decade's core ideas, after Course 6")}
+        <h3><span class="step">1</span>Foundations</h3>
+        {node(1, "Start here: research skills, maths, code and deep learning basics")}
+        {node(2, "The decade's core deep learning ideas")}
       </div>
       <div class="path-col">
-        <h3><span class="step">2</span>Research track</h3>
+        <h3><span class="step">2</span>Build</h3>
+        {node(3, "How today's language models work")}
+        {node(4, "A project: your own Bangla model")}
+        {node(5, "Practical · can run alongside the others")}
+      </div>
+      <div class="path-col">
+        <h3><span class="step">3</span>Research</h3>
         <div class="path-chain">
-          {node(1)}{node(3)}{node(2)}{node(4)}
-          {node(10, "Stay current · checked November 2026")}
+          {node(6)}{node(7)}{node(8)}
         </div>
       </div>
       <div class="path-col">
-        <h3><span class="step">3</span>Build and get hired</h3>
-        {node(7, "After Course 6 or 3")}
-        {node(8, "After Course 6")}
-        {node(5, "Practical · take alongside any course")}
+        <h3><span class="step">4</span>Stay current and get hired</h3>
+        {node(9, "Checked November 2026")}
+        {node(10, "Any time after Course 1")}
       </div>
     </div>
   </div>
