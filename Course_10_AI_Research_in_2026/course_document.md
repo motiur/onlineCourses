@@ -734,8 +734,8 @@ Hand in one PDF and your notebook.
 
 - The Metropolis-adjusted Langevin algorithm (MALA) treats the ULA step as a proposal $y$ and accepts it with probability $\min\big(1, \pi(y)q(x \mid y) / (\pi(x)q(y \mid x))\big)$. Then $\pi$ is exactly stationary for any $h$ (Roberts & Tweedie 1996).
 - The ratio $\pi(y)/\pi(x) = e^{f(x) - f(y)}$ needs values of $f$. A diffusion model gives only the score, a gradient, so MALA cannot be applied to it directly.
-- Low versus high accuracy: for strongly log-concave targets, Dwivedi et al. (2019) proved that MALA needs about $\kappa d \log(1/\delta)$ steps from a warm start ($\kappa$ is the condition number, $d$ the dimension), against known bounds for ULA of order $\kappa^2 d/\delta^2$. "polylog$(1/\delta)$" means a power of $\log(1/\delta)$; "poly$(1/\delta)$" means a power of $1/\delta$.
-- Chen, Chewi, Daskalakis & Rakhlin (2026), an ICML 2026 Outstanding Paper, introduce First-Order Rejection Sampling (FORS), which imitates rejection sampling using only gradient queries. For diffusion models, assuming score estimates accurate to about $\delta$ (in $L^2$), they report $\delta$-error in polylog$(1/\delta)$ steps, an exponential improvement over earlier guarantees. They also claim the first polylog$(1/\delta)$ sampler for general log-concave distributions using only gradient evaluations.
+- Low versus high accuracy: for strongly log-concave targets, Dwivedi et al. (2019) proved that MALA needs about $\kappa d \log(1/\delta)$ steps from a warm start ($\kappa$ is the condition number, $d$ the dimension), against known bounds for ULA of order $\kappa^2 d/\delta^2$. "$\mathrm{polylog}(1/\delta)$" means a power of $\log(1/\delta)$; "$\mathrm{poly}(1/\delta)$" means a power of $1/\delta$.
+- Chen, Chewi, Daskalakis & Rakhlin (2026), an ICML 2026 Outstanding Paper, introduce First-Order Rejection Sampling (FORS), which imitates rejection sampling using only gradient queries. For diffusion models, assuming score estimates accurate to about $\delta$ (in $L^2$), they report $\delta$-error in $\mathrm{polylog}(1/\delta)$ steps, an exponential improvement over earlier guarantees. They also claim the first $\mathrm{polylog}(1/\delta)$ sampler for general log-concave distributions using only gradient evaluations.
 - **Pause and try:** for $\delta = 10^{-4}$, compare $1/\delta$ with $(\ln 1/\delta)^2$.
   - **Answer:** 10,000 against about 85. That gap is what "exponential improvement" means here.
 
@@ -767,7 +767,7 @@ Hand in one PDF and your notebook.
 2. What does MALA need that ULA does not?
    - **Answer:** values of $f$ (density ratios $\pi(y)/\pi(x)$) for the accept/reject step, not just gradients.
 3. What does FORS achieve, according to its authors?
-   - **Answer:** it imitates rejection sampling using only gradient queries, giving polylog$(1/\delta)$ step counts for diffusion models (with accurate scores) and for general log-concave distributions.
+   - **Answer:** it imitates rejection sampling using only gradient queries, giving $\mathrm{polylog}(1/\delta)$ step counts for diffusion models (with accurate scores) and for general log-concave distributions.
 
 **Watch out:** "Smaller step size always fixes Langevin's error cheaply." ULA's bias shrinks only in proportion to $h$, while the number of steps it needs to mix grows like $1/h$. On the notebook's 2-D Gaussian, ULA needs about 442,000 steps for relative error $10^{-4}$, and MALA reached the noise level in under 100 steps. A correction removes the bias instead of shrinking it.
 
@@ -975,7 +975,7 @@ Hand in one PDF and your notebook.
 - A query $(u, v, t_{src}, t_{tgt}, t_{cam})$ asks for the 3-D position, at time $t_{tgt}$ and in the coordinates of camera $t_{cam}$, of the point seen at pixel $(u, v)$ in frame $t_{src}$. Different settings give point clouds, depth maps, tracks and camera poses from the same interface.
 - Because queries are independent, the model encodes the video once and decodes only the points you ask for, in parallel. The authors report state-of-the-art speed and accuracy across 4-D reconstruction tasks.
 - **Pause and try:** which queries give (a) a depth map of frame 3, and (b) the track of one point through the video?
-  - **Answer:** (a) every pixel $(u, v)$ with $t_{src} = t_{tgt} = t_{cam} = 3$; (b) one fixed $(u, v, t_{src})$ with $t_{tgt}$ running over all frames and a fixed $t_{cam}$.
+  - **Answer:** (a) every pixel $(u, v)$ with $t_{src} = t_{tgt} = t_{cam} = 3$; (b) one fixed $(u, v, t_{src})$ with $t_{tgt} = t_{cam}$ running over all frames, as in the paper; keeping $t_{cam}$ fixed instead expresses the whole track in one camera's coordinates.
 
 ### Segment 3 (6 min): NeurIPS 2026, keeping this course current, and the capstone
 
