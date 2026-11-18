@@ -1,6 +1,6 @@
 # onlineCourses
 
-Materials for an AI teaching YouTube channel: ten courses running from beginner level to current research, numbered in the order to take them. Each course has 12 sessions, a course document (PDF) and one Jupyter notebook per session (120 notebooks in all).
+Materials for an AI teaching YouTube channel: eleven courses running from beginner level to current research. Each course has 12 sessions, a course document (PDF) and one Jupyter notebook per session (132 notebooks in all).
 
 **Website:** https://motiur.github.io/onlineCourses/
 
@@ -11,6 +11,7 @@ Materials for an AI teaching YouTube channel: ten courses running from beginner 
 | # | Course | Stage | Folder |
 |---|---|---|---|
 | 1 | From Beginner to an AI Research Lab | Foundations: start here | [Course_1_From_Beginner_to_an_AI_Research_Lab](Course_1_From_Beginner_to_an_AI_Research_Lab) |
+| 11 | Mathematics for Machine Learning | Foundations: with or after Course 1 | [Course_11_Mathematics_for_Machine_Learning](Course_11_Mathematics_for_Machine_Learning) |
 | 2 | Ten Years of Deep Learning Ideas | Foundations | [Course_2_Ten_Years_of_Deep_Learning_Ideas](Course_2_Ten_Years_of_Deep_Learning_Ideas) |
 | 3 | Large Language Models | Build | [Course_3_Large_Language_Models](Course_3_Large_Language_Models) |
 | 4 | Building a Small Bangla Language Model | Build: a project after Course 3 | [Course_4_Building_a_Small_Bangla_Language_Model](Course_4_Building_a_Small_Bangla_Language_Model) |
@@ -21,13 +22,13 @@ Materials for an AI teaching YouTube channel: ten courses running from beginner 
 | 9 | AI Research in 2026 | Stay current: checked November 2026 | [Course_9_AI_Research_in_2026](Course_9_AI_Research_in_2026) |
 | 10 | Research Engineering Interviews | Get hired: any time after Course 1 | [Course_10_Research_Engineering_Interviews](Course_10_Research_Engineering_Interviews) |
 
-The courses were renumbered into this order on 18 November 2026. Old number → new number: 1 → 6, 2 → 7, 3 → 3, 4 → 8, 5 → 5, 6 → 1, 7 → 4, 8 → 10, 9 → 2, 10 → 9. The folders, notebooks, PDFs and website use the new numbers; the live Claude docs and the two planning PDFs still use the old ones.
+Course 11 was added after the renumbering, so its number does not yet match its place in the order; the courses will be renumbered once more when the planned new courses are finished. The courses were renumbered into this order on 18 November 2026. Old number → new number: 1 → 6, 2 → 7, 3 → 3, 4 → 8, 5 → 5, 6 → 1, 7 → 4, 8 → 10, 9 → 2, 10 → 9. The folders, notebooks, PDFs and website use the new numbers; the live Claude docs and the two planning PDFs still use the old ones.
 
 Each course folder contains:
 
-- `*_course_document.pdf`: session content (three video segments per session with pause-and-try questions, a lab, a quiz, a misconception to address, answers and sources; Courses 1, 2, 4, 9 and 10 also have talking pointers, lab guides and graded assignments).
+- `*_course_document.pdf`: session content (three video segments per session with pause-and-try questions, a lab, a quiz, a misconception to address, answers and sources; Courses 1, 2, 4, 9, 10 and 11 also have talking pointers, lab guides and graded assignments).
 - `notebooks/`: `s01_...` to `s12_...`, plus a `README.md` saying which cells were run and any extra `pip install` needed.
-- Courses 2 and 9 also have `course_document.md`, the Markdown source of their PDF. Edit it, then rebuild the PDF with `python3 tools/build_course_pdf.py <course folder>`. Their notebooks are saved with their outputs, so the numbers can be read without running anything.
+- Courses 2, 9 and 11 also have `course_document.md`, the Markdown source of their PDF. Edit it, then rebuild the PDF with `python3 tools/build_course_pdf.py <course folder>`. Their notebooks are saved with their outputs, so the numbers can be read without running anything.
 
 ## Planning
 
@@ -35,7 +36,7 @@ Each course folder contains:
 - [planning/00_Syllabus_Courses_1-4.pdf](planning/00_Syllabus_Courses_1-4.pdf): syllabi for what are now Courses 6, 7, 3 and 8, written before the renumbering (its "Courses 1–4" are the old numbers).
 - [planning/course-index.md](planning/course-index.md): index of the live docs, notebook notes and open items.
 
-The PDFs for Courses 1, 3–8 and 10 are exports of the live docs, with their course numbers updated to the new order; the live docs themselves still carry the old numbers. Courses 2 and 9 are edited as Markdown in this repository.
+The PDFs for Courses 1, 3–8 and 10 are exports of the live docs, with their course numbers updated to the new order; the live docs themselves still carry the old numbers. Courses 2, 9 and 11 are edited as Markdown in this repository.
 
 ## How the notebooks were checked
 
@@ -43,7 +44,7 @@ The PDFs for Courses 1, 3–8 and 10 are exports of the live docs, with their co
 - Runnable cells use small built-in or synthetic data, so their numbers illustrate how a method behaves; they are not benchmark results.
 - Cells labelled **NOT RUN** need a GPU, a download, an account, or a library that was not installed (for example PyTorch Geometric, escnn, e3nn, Opacus, Flower, TenSEAL, CatBoost, TabPFN, timm, transformers, peft, vLLM, LeanDojo). They were written from documented interfaces and have not been executed. Dry-run each one before recording, and expect to fix some calls.
 - The Lean 4 code in Course 8 (sessions 9 and 11) was not compiled.
-- Courses 2 and 9 were executed with `tools/run_notebook.py`, which runs every cell except NOT RUN cells and saves the outputs, then re-run independently: every printed number reproduced, apart from timings.
+- Courses 2, 9 and 11 were executed with `tools/run_notebook.py`, which runs every cell except NOT RUN cells and saves the outputs, then re-run independently: every printed number reproduced, apart from timings.
 
 ## Running a notebook
 
