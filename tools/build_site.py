@@ -50,6 +50,16 @@ COURSES = [
                  "convince, writing, and getting in through applications, cold emails and interviews.",
          topics=["Foundations", "Reproducing papers", "Experiments", "Research writing", "Applications"],
          prereq="None beyond school mathematics and willingness to code."),
+    dict(n=11, folder="Course_11_Mathematics_for_Machine_Learning",
+         title="Mathematics for Machine Learning", level="Beginner",
+         track="Foundations · with or after Course 1",
+         summary="The mathematics machine learning actually uses, taught through ML questions and checked in "
+                 "NumPy: vectors and matrices, least squares, eigenvalues, SVD and PCA, gradients and automatic "
+                 "differentiation, probability and estimation, optimization, numerical stability, information "
+                 "theory, and graphs from PageRank to graph neural networks.",
+         topics=["Linear algebra", "SVD & PCA", "Calculus & autodiff", "Probability", "Optimization",
+                 "Numerical methods"],
+         prereq="Python basics and school mathematics; take it with or after Course 1."),
     dict(n=2, folder="Course_2_Ten_Years_of_Deep_Learning_Ideas",
          title="Ten Years of Deep Learning Ideas", level="Core",
          track="Foundations · after Course 1",
@@ -324,6 +334,7 @@ def build_home(all_sessions):
       <div class="path-col">
         <h3><span class="step">1</span>Foundations</h3>
         {node(1, "Start here: research skills, maths, code and deep learning basics")}
+        {node(11, "The maths machine learning uses, with code")}
         {node(2, "The decade's core deep learning ideas")}
       </div>
       <div class="path-col">
