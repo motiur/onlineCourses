@@ -28,7 +28,7 @@ Materials for an AI teaching YouTube channel: fifteen courses running from begin
 
 The deploy-and-apply courses (11–13) do not need the research courses: take them any time after the courses named in the Stage column.
 
-The courses were renumbered into this order on 19 November 2026, when Courses 2 and 10–13 were added. Numbers before (18 November) → now: 1 → 1, 2 → 3, 3 → 4, 4 → 5, 5 → 6, 6 → 7, 7 → 8, 8 → 9, 9 → 14, 10 → 15, 11 → 2, and the new courses took 10–13. The live Claude docs and the two planning PDFs use the original numbers of the first eight courses; original → now: 1 → 7, 2 → 8, 3 → 4, 4 → 9, 5 → 6, 6 → 1, 7 → 5, 8 → 15.
+The courses were renumbered into this order on 19 November 2026, when Courses 2 and 10–13 were added. Numbers before (18 November) → now: 1 → 1, 2 → 3, 3 → 4, 4 → 5, 5 → 6, 6 → 7, 7 → 8, 8 → 9, 9 → 14, 10 → 15, 11 → 2, and the new courses took 10–13. The text of the live Claude docs was updated to the new numbers on 19 November 2026, but their titles still show the original numbers until they are renamed on claude.ai, and the two planning PDFs keep the original numbers. Original → now: 1 → 7, 2 → 8, 3 → 4, 4 → 9, 5 → 6, 6 → 1, 7 → 5, 8 → 15.
 
 Each course folder contains:
 
@@ -42,7 +42,7 @@ Each course folder contains:
 - [planning/00_Syllabus_Courses_1-4.pdf](planning/00_Syllabus_Courses_1-4.pdf): syllabi for what are now Courses 7, 8, 4 and 9, written before the renumbering (its "Courses 1–4" are the original numbers).
 - [planning/course-index.md](planning/course-index.md): index of the live docs, notebook notes and open items.
 
-The PDFs for Courses 1, 4–9 and 15 are exports of the live docs, with their course numbers updated to the new order; the live docs themselves still carry the original numbers. Courses 2, 3 and 10–14 are edited as Markdown in this repository.
+The PDFs for Courses 1, 4–9 and 15 are exports of the live docs, with their course numbers updated to the new order; the live docs' text now uses the same numbers. Courses 2, 3 and 10–14 are edited as Markdown in this repository.
 
 ## How the notebooks were checked
 

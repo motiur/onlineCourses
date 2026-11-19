@@ -4,7 +4,7 @@ Docs for Mohammad's AI teaching channel, which runs from beginner level to curre
 
 ## Docs
 
-The live docs keep their original titles, which use the old course numbers; the mapping to the new numbers is under Status.
+The live docs' text uses the new course numbers (updated 19 November 2026). Their titles, used as the link texts below, still show the original numbers until they are renamed on claude.ai; the mapping is under Status.
 
 - [AI Teaching YouTube Channel: Research & Plan](https://claude.ai/artifact/5CZjPijrNbkTgZsKwTF6RM): research on what makes teaching videos work, the Bangladeshi audience, YouTube rules and monetization, a curriculum ladder and a launch timeline.
 - [Four Courses on Current AI Research](https://claude.ai/artifact/N1vPB4dx5dB7hgC71M4f61): syllabi for four 12-session courses (geometric deep learning, privacy-preserving ML, LLMs, and mathematics and AI), the session format, capstones, instructor notes and sources.
@@ -53,7 +53,7 @@ Each content doc gives every session three video segments with pause-and-try que
 
 These are Claude's suggestions, not yet confirmed by Mohammad.
 
-- Teaching order: Course 1 → 15, in five stages: Foundations (1–3), Build (4–6), Research (7–10), Deploy and apply (11–13), and Stay current and get hired (14–15). The courses were renumbered into this order on 19 November 2026, when Courses 2 and 10–13 were added; the deploy-and-apply courses can be taken right after the Build stage. Numbers of 18 November → now: 1 → 1, 2 → 3, 3 → 4, 4 → 5, 5 → 6, 6 → 7, 7 → 8, 8 → 9, 9 → 14, 10 → 15, 11 → 2. The live docs linked above, and the planning PDFs, use the original numbers; original → now: 1 → 7, 2 → 8, 3 → 4, 4 → 9, 5 → 6, 6 → 1, 7 → 5, 8 → 15.
+- Teaching order: Course 1 → 15, in five stages: Foundations (1–3), Build (4–6), Research (7–10), Deploy and apply (11–13), and Stay current and get hired (14–15). The courses were renumbered into this order on 19 November 2026, when Courses 2 and 10–13 were added; the deploy-and-apply courses can be taken right after the Build stage. Numbers of 18 November → now: 1 → 1, 2 → 3, 3 → 4, 4 → 5, 5 → 6, 6 → 7, 7 → 8, 8 → 9, 9 → 14, 10 → 15, 11 → 2. The live docs' text uses the new numbers, but their titles and the planning PDFs still use the original ones; original → now: 1 → 7, 2 → 8, 3 → 4, 4 → 9, 5 → 6, 6 → 1, 7 → 5, 8 → 15.
 - All fifteen courses now have full session content and notebooks.
 - The content docs include all answers, so hide them before sharing with students. Course 15 notebooks include reference solutions at the bottom.
 - Courses 4 and 6–9: the notebooks run small CPU versions of each lab. The labs as written in the syllabus (real datasets, GPU training, Kaggle submissions, Lean, real LLMs) have still not been run. Do a dry run of each NOT RUN cell before recording.
