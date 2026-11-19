@@ -50,7 +50,7 @@ COURSES = [
                  "convince, writing, and getting in through applications, cold emails and interviews.",
          topics=["Foundations", "Reproducing papers", "Experiments", "Research writing", "Applications"],
          prereq="None beyond school mathematics and willingness to code."),
-    dict(n=11, folder="Course_11_Mathematics_for_Machine_Learning",
+    dict(n=2, folder="Course_2_Mathematics_for_Machine_Learning",
          title="Mathematics for Machine Learning", level="Beginner",
          track="Foundations · with or after Course 1",
          summary="The mathematics machine learning actually uses, taught through ML questions and checked in "
@@ -60,64 +60,104 @@ COURSES = [
          topics=["Linear algebra", "SVD & PCA", "Calculus & autodiff", "Probability", "Optimization",
                  "Numerical methods"],
          prereq="Python basics and school mathematics; take it with or after Course 1."),
-    dict(n=2, folder="Course_2_Ten_Years_of_Deep_Learning_Ideas",
+    dict(n=3, folder="Course_3_Ten_Years_of_Deep_Learning_Ideas",
          title="Ten Years of Deep Learning Ideas", level="Core",
          track="Foundations · after Course 1",
          summary="The big deep learning ideas of 2016–2026 that the other courses don't teach: residuals, "
                  "normalization and µP, modern optimizers, the generalization puzzles, vision transformers, "
                  "self-supervised and in-context learning, VAEs to GANs, diffusion and flow matching, deep RL,"
                  " neural fields, and robustness and calibration.",
-         topics=["Normalization & µP", "Optimizers", "Self-supervised learning", "Diffusion & flow matching", "Deep RL", "Neural fields"],
-         prereq="Course 1 (PyTorch training loops and basic deep learning)."),
-    dict(n=3, folder="Course_3_Large_Language_Models",
+         topics=["Normalization & µP", "Optimizers", "Self-supervised learning", "Diffusion & flow matching",
+                 "Deep RL", "Neural fields"],
+         prereq="Course 1 (PyTorch training loops and basic deep learning); Course 2 helps."),
+    dict(n=4, folder="Course_4_Large_Language_Models",
          title="Large Language Models", level="Research",
-         track="Build · after Course 2",
+         track="Build · after Course 3",
          summary="How today's language models are built, trained and evaluated: the modern transformer, "
                  "tokenization across languages, scaling laws, efficient inference, LoRA and QLoRA, DPO, GRPO "
                  "and reasoning, agents, multimodality, diffusion LMs and interpretability.",
          topics=["Transformers", "Scaling laws", "LoRA", "DPO & GRPO", "Agents", "Interpretability"],
-         prereq="Python, PyTorch and the basics of neural networks; Course 2 helps."),
-    dict(n=4, folder="Course_4_Building_a_Small_Bangla_Language_Model",
+         prereq="PyTorch and a working knowledge of transformers (Course 1); Course 3 helps."),
+    dict(n=5, folder="Course_5_Building_a_Small_Bangla_Language_Model",
          title="Building a Small Bangla Language Model", level="Project",
-         track="Build · a project after Course 3",
+         track="Build · a project after Course 4",
          summary="Take a 5–30M-parameter Bangla GPT from raw text to a public release: Unicode cleaning, "
                  "corpus building, tokenizer, model design, training on free GPUs, evaluation, instruction "
                  "tuning against a LoRA baseline, compression and responsible release.",
          topics=["Bangla NLP", "Tokenizers", "Pretraining", "Instruction tuning", "Model cards"],
-         prereq="Course 3, or at least Course 1."),
-    dict(n=5, folder="Course_5_Winning_Online_AI_Competitions",
+         prereq="Python and PyTorch at the level of Course 1, and reading Bangla; Course 4 gives the wider "
+                "LLM background."),
+    dict(n=6, folder="Course_6_Winning_Online_AI_Competitions",
          title="Winning Online AI Competitions", level="Practical",
          track="Build · can run alongside other courses",
          summary="A practical playbook for Kaggle-style contests: choosing a competition, metrics and "
                  "leaderboards, validation you can trust, leakage, tabular, time-series, vision, LLM and "
                  "reasoning competitions, ensembling and write-ups, ending in a live-competition capstone.",
          topics=["Validation", "Gradient boosting", "TTA", "Ensembling", "Kaggle"],
-         prereq="Python and scikit-learn; Course 2 helps."),
-    dict(n=6, folder="Course_6_Geometric_Deep_Learning_and_Graphs",
+         prereq="Python, pandas and supervised learning basics; Course 4 helps with the LLM sessions."),
+    dict(n=7, folder="Course_7_Geometric_Deep_Learning_and_Graphs",
          title="Geometric Deep Learning and Graphs", level="Research",
          track="Research track",
          summary="Symmetry as the organising idea behind modern architectures: message passing, expressive "
                  "power, graph transformers, equivariant CNNs and E(3) models for atoms, curved spaces, "
                  "generative models on graphs, and graph learning in medicine.",
          topics=["GNNs", "Equivariance", "Graph transformers", "Hyperbolic embeddings", "Graph diffusion"],
-         prereq="Comfort with PyTorch and basic linear algebra."),
-    dict(n=7, folder="Course_7_Privacy_Preserving_ML",
+         prereq="Python, PyTorch basics, linear algebra and probability (Course 2)."),
+    dict(n=8, folder="Course_8_Privacy_Preserving_ML",
          title="Privacy-Preserving Machine Learning", level="Research",
          track="Research track",
          summary="What models leak and how to stop it: differential privacy from first principles, DP-SGD and "
                  "accounting, privacy auditing, federated learning and its attacks, private LLM fine-tuning, "
                  "encrypted inference, unlearning and fairness.",
          topics=["Differential privacy", "DP-SGD", "Federated learning", "Homomorphic encryption", "Unlearning"],
-         prereq="Course 6 or equivalent deep learning experience; Course 3 for session 7."),
-    dict(n=8, folder="Course_8_Mathematics_and_AI",
+         prereq="Python, PyTorch basics and probability; no cryptography needed; Course 4 for session 7."),
+    dict(n=9, folder="Course_9_Mathematics_and_AI",
          title="Mathematics and AI", level="Research",
          track="Research track",
          summary="Mathematics for AI and AI for mathematics: groups and representations, steerable kernels, "
                  "grokking, category theory and lenses, sheaves on graphs, Lean 4, AI theorem proving, "
                  "autoformalization and AI-driven mathematical discovery.",
          topics=["Group theory", "Category theory", "Sheaves", "Lean 4", "Theorem proving"],
-         prereq="Undergraduate linear algebra; Course 6 helps."),
-    dict(n=9, folder="Course_9_AI_Research_in_2026",
+         prereq="Undergraduate linear algebra; Course 7 helps."),
+    dict(n=10, folder="Course_10_Deep_Learning_on_Curved_Spaces",
+         title="Deep Learning on Curved Spaces", level="Research",
+         track="Research · after Courses 2 and 7",
+         summary="Riemannian geometry for machine learning, built from the sphere upward and checked in code: "
+                 "manifolds, geodesics, curvature and Riemannian optimization, then hyperbolic embeddings and "
+                 "networks, SPD matrices for EEG, rotations and Lie groups, generative models on manifolds and "
+                 "mixed-curvature spaces.",
+         topics=["Riemannian geometry", "Hyperbolic networks", "SPD matrices", "Rotations",
+                 "Flow matching on manifolds"],
+         prereq="Course 2 (Mathematics for Machine Learning) and basic deep learning; Course 7 helps."),
+    dict(n=11, folder="Course_11_On_Device_AI",
+         title="On-Device AI", level="Practical",
+         track="Deploy and apply · after Course 3",
+         summary="Making models small, fast and frugal enough to run offline on phones and microcontrollers, "
+                 "with every technique measured: efficient architectures, quantization, pruning, distillation, "
+                 "ONNX Runtime, memory and the KV cache, small language models and speech on phones, TinyML, "
+                 "honest benchmarking and learning on the device.",
+         topics=["Quantization", "Pruning", "Distillation", "ONNX Runtime", "TinyML", "Benchmarking"],
+         prereq="PyTorch at the level of Course 1; Courses 4 and 5 help with the language-model sessions."),
+    dict(n=12, folder="Course_12_AI_for_Accessibility",
+         title="AI for Accessibility", level="Applied",
+         track="Deploy and apply · after Course 3",
+         summary="How AI can help disabled people hear, see, read and communicate, and how it can fail them: "
+                 "speech recognition and captions, sign language and lip reading, image description, reading "
+                 "support and AAC, with evaluation with users, fairness and deployment in Bangladesh.",
+         topics=["Speech recognition", "Captions", "Sign language", "Lip reading", "Image description",
+                 "Participatory design"],
+         prereq="Basic deep learning (Course 1); Course 3 helps with the sequence models."),
+    dict(n=13, folder="Course_13_ML_for_Agriculture_and_Climate",
+         title="Machine Learning for Agriculture and Climate", level="Applied",
+         track="Deploy and apply · after Course 1",
+         summary="Machine learning for food and climate, with Bangladesh as the running example: plant disease "
+                 "detection, remote sensing and crop mapping, yield prediction, weather forecasting and ML "
+                 "weather models, floods, downscaling, extremes and decisions, farm sensors, and validation "
+                 "that respects space and time.",
+         topics=["Remote sensing", "Crop mapping", "Weather forecasting", "Floods", "Extremes",
+                 "Spatial validation"],
+         prereq="Python, pandas and basic machine learning (Course 1); Courses 2 and 6 help."),
+    dict(n=14, folder="Course_14_AI_Research_in_2026",
          title="AI Research in 2026", level="Current",
          track="Stay current · checked November 2026",
          summary="What AI research found from January to November 2026: agents' time horizons, RL for "
@@ -125,8 +165,8 @@ COURSES = [
                  "Polar Express and Muon, provable grokking, high-accuracy sampling, deception probes, AI on "
                  "Erdős problems and 4D reconstruction, each with a toy lab.",
          topics=["Agents", "RL for reasoning", "Diffusion LMs", "Theory", "Safety", "AI for maths"],
-         prereq="Course 1; Courses 2 and 3 recommended."),
-    dict(n=10, folder="Course_10_Research_Engineering_Interviews",
+         prereq="Course 1; Courses 3 and 4 recommended."),
+    dict(n=15, folder="Course_15_Research_Engineering_Interviews",
          title="Research Engineering Interviews", level="Career",
          track="Get hired · any time after Course 1",
          summary="Prepare for research engineering interview loops: coding, tensor fluency, ML from scratch, "
@@ -334,25 +374,31 @@ def build_home(all_sessions):
       <div class="path-col">
         <h3><span class="step">1</span>Foundations</h3>
         {node(1, "Start here: research skills, maths, code and deep learning basics")}
-        {node(11, "The maths machine learning uses, with code")}
-        {node(2, "The decade's core deep learning ideas")}
+        {node(2, "The maths machine learning uses, with code")}
+        {node(3, "The decade's core deep learning ideas")}
       </div>
       <div class="path-col">
         <h3><span class="step">2</span>Build</h3>
-        {node(3, "How today's language models work")}
-        {node(4, "A project: your own Bangla model")}
-        {node(5, "Practical · can run alongside the others")}
+        {node(4, "How today's language models work")}
+        {node(5, "A project: your own Bangla model")}
+        {node(6, "Practical · can run alongside the others")}
       </div>
       <div class="path-col">
         <h3><span class="step">3</span>Research</h3>
         <div class="path-chain">
-          {node(6)}{node(7)}{node(8)}
+          {node(7)}{node(8)}{node(9)}{node(10)}
         </div>
       </div>
       <div class="path-col">
-        <h3><span class="step">4</span>Stay current and get hired</h3>
-        {node(9, "Checked November 2026")}
-        {node(10, "Any time after Course 1")}
+        <h3><span class="step">4</span>Deploy and apply</h3>
+        {node(11, "Run models offline on phones")}
+        {node(12, "With and for disabled people")}
+        {node(13, "Food, floods and climate")}
+      </div>
+      <div class="path-col">
+        <h3><span class="step">5</span>Stay current and get hired</h3>
+        {node(14, "Checked November 2026")}
+        {node(15, "Any time after Course 1")}
       </div>
     </div>
   </div>

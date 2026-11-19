@@ -8,7 +8,7 @@ A 12-session course on how AI can help disabled people hear, see, read and commu
 
 Speech recognition, computer vision and language models are already changing assistive technology: live captions, image descriptions, word prediction, and early systems for sign language and lip reading. This course teaches how these systems work by building small versions of each, and how to evaluate them with the people who use them. It gives special attention to Bangla and to the Deaf community in Bangladesh, where data are scarce and tools are few. Disabled people appear in this course as users, experts and partners: no session promises that AI replaces interpreters, captioners or teachers.
 
-Prerequisites: Python and basic deep learning (Course 1); Course 2 helps for sessions 5–7. Course 14 (On-Device AI) is a useful companion for deployment.
+Prerequisites: Python and basic deep learning (Course 1); Course 3 helps for sessions 5–7. Course 11 (On-Device AI) is a useful companion for deployment.
 
 Capstone: with a community partner where possible, build a small assistive tool, such as a sign or lip-reading recognizer for a small vocabulary, a caption segmenter, a photo-quality guide for blind users or a Bangla word predictor. Collect a small consented dataset, evaluate the tool for each group of users and with users themselves, and present it in a 10-minute video. A suggested weighting is assignments 40%, capstone 40% and quizzes 20%. A suggested capstone rubric, out of 100: a problem defined with users or a partner (20); a working baseline and model with honest metrics (25); evaluation per group, with uncertainty (20); a user test or expert review, and what it changed (20); clarity of the report and video, including limitations and consent (15).
 
@@ -175,7 +175,7 @@ Hand in one PDF and your notebook.
 
 - The alignment problem: the training data say which words were spoken, but not which frames belong to which sound.
 - **Connectionist temporal classification** (CTC; Graves et al. 2006) lets the network output one symbol per frame, plus a **blank** meaning "nothing new". A frame path is read by merging repeats and then deleting blanks, so `a a - a b b - b` gives `aabb`; the blank between the two a's is what allows a double letter.
-- The probability of a transcript is the sum over all paths that collapse to it. A dynamic program, the forward algorithm, computes this sum in log space with log-sum-exp (Course 11 session 10), and the loss is its negative log-likelihood (Course 11 session 7). Hannun (2017) explains it with pictures.
+- The probability of a transcript is the sum over all paths that collapse to it. A dynamic program, the forward algorithm, computes this sum in log space with log-sum-exp (Course 2 session 10), and the loss is its negative log-likelihood (Course 2 session 7). Hannun (2017) explains it with pictures.
 - **Greedy decoding** takes the best symbol at each frame and collapses; beam search keeps several candidates (session 6). Because CTC treats frames as independent given the audio, a separate language model often helps (Hannun 2017).
 - **Encoder–decoder** models write text token by token while attending to the encoded audio. Whisper was trained this way on 680,000 hours of labelled web audio in many languages and accepts Bangla (Radford et al. 2022); its decoder is also a language model, so it can write fluent words that were never spoken.
 - **Self-supervised pretraining:** wav2vec 2.0 learns from unlabelled audio by masking parts of it and picking the true hidden features among distractors, then is fine-tuned with CTC on a little labelled data (Baevski et al. 2020). XLS-R does the same on 128 languages (Babu et al. 2021), which helps languages with few labels.
@@ -187,7 +187,7 @@ Hand in one PDF and your notebook.
 - Open Bangla speech data include OpenSLR 53, a crowd-sourced corpus of Bangladeshi Bengali read speech (Kjartansson et al. 2018), and the Bangla part of Mozilla Common Voice, recorded by volunteers (Ardila et al. 2020). Both are mostly read sentences; check each licence.
 - Real use is harder: regional varieties such as Chittagonian and Sylheti, Bangla–English code-switching ("আমার একটা meeting আছে"), cheap microphones, background voices, and atypical speech.
 - **Word error rate:** WER = (S + D + I)/N: substitutions, deletions and insertions that turn the reference into the output, over N reference words. **Character error rate** (CER) counts characters. Bangla words carry suffixes (বাজার, বাজারে), so one wrong letter makes a whole word wrong; CER shows partial correctness.
-- Normalize both sides the same way before scoring: Unicode form, punctuation, Bangla and ASCII digits. য় can be one code point or two that look identical (Course 4 session 2).
+- Normalize both sides the same way before scoring: Unicode form, punctuation, Bangla and ASCII digits. য় can be one code point or two that look identical (Course 5 session 2).
 - **Pause and try:** reference "আমি বাজারে যাব" (14 code points), output "আমি বাজার যাব". What are the WER and the CER?
   - **Answer:** one wrong word in three, WER = 0.333; one missing vowel sign, CER = 1/14 = 0.071.
 
@@ -251,7 +251,7 @@ Hand in one PDF and your notebook.
 - Deaf and hard-of-hearing viewers rely on them, and many other people use them too, for example when watching without sound or in a second language.
 - Four qualities: **accuracy** (the right words), **synchronization** (on screen while the words are spoken), **completeness** (speaker names, sound cues such as [music] or [door closing]), and **readability**.
 - Readability is measured in reading speed (characters per second, cps), characters per line, lines per block, and how lines are broken. Broadcasters and streaming services publish their own limits; check the guideline you must follow. The lab uses example limits: 42 characters per line, 2 lines, 1 to 7 seconds per block, and 17 cps.
-- For Bangla, count what the reader sees: one visible letter can be several code points (Course 4 session 2).
+- For Bangla, count what the reader sees: one visible letter can be several code points (Course 5 session 2).
 - **Pause and try:** the block "Second, they must appear at the right time," has 43 characters and is shown for 2.0 seconds. What is its reading speed, and how long must it stay up for 17 cps?
   - **Answer:** 43 / 2.0 = 21.5 cps, too fast; it needs 43 / 17 = 2.53 seconds.
 
@@ -350,7 +350,7 @@ Hand in one PDF and your notebook.
 
 - The same handshape gives different numbers when the hand moves, turns or comes closer. **Normalize:** move the wrist to the origin, divide by the palm size (wrist to middle-finger knuckle), and rotate into the hand's own frame (wrist to middle knuckle is "up", little-finger knuckle to index knuckle is "right").
 - A rotation cannot turn a left hand into a right hand. **Mirror** left hands (flip x) before normalizing, using the detector's handedness.
-- **Invariant features** such as pairwise distances or joint angles do not change under rotation or mirroring, but distances cannot tell mirror images apart; Course 6 session 7 makes the same choice for molecules.
+- **Invariant features** such as pairwise distances or joint angles do not change under rotation or mirroring, but distances cannot tell mirror images apart; Course 7 session 7 makes the same choice for molecules.
 - **Evaluate on new signers.** A random split puts every signer in both training and test sets, so the model learns personal style. Split by signer, report accuracy per signer and per handshape, and give uncertainty, since few signers make a noisy estimate (Course 1 session 9).
 - In the lab, normalization lifted kNN from 0.391 to 0.900 on new signers, and the left-handed new signer scored 0.893 against 0.947–0.973 for the others.
 - **Pause and try:** your dataset has 5 signers, and a random 80/20 split gives 0.97. What should you do instead, and how many models does leave-one-signer-out train?
@@ -412,14 +412,14 @@ Hand in one PDF and your notebook.
 - A standard word-level dataset is WLASL, with about 2,000 American Sign Language words; accuracy on the full 2,000 words was far lower than on its 100-word subset, and in its authors' comparison a model reading raw video beat a pose-based graph model (Li et al. 2020). For any BdSL word dataset, check its vocabulary size, licence and number of signers before you use it.
 - Each clip becomes a sequence of landmark frames (session 4), normalized for position and size. Signs vary in length because people sign at different speeds.
 - A batch needs equal lengths, so we **pad** short sequences and keep a **mask** of the real frames. Averages and attention must ignore the padding; a recurrent network can skip it with packed sequences.
-- Encoders over time: a 1-D convolution (local patterns, fast), a recurrent network such as a GRU (reads frames in order), or a Transformer encoder (attention between all frames; Course 3 session 1).
+- Encoders over time: a 1-D convolution (local patterns, fast), a recurrent network such as a GRU (reads frames in order), or a Transformer encoder (attention between all frames; Course 4 session 1).
 - **Pause and try:** sequence values 2, 4, 6 are padded to 2, 4, 6, 6, 6. What is the plain mean, and the masked mean?
   - **Answer:** 4.8 and 4.0. Without the mask, a short sign is pulled towards its last frame.
 
 ### Segment 2 (7 min): the skeleton as a graph
 
 - The 21 landmarks are nodes and the bones are edges. A **spatial–temporal graph convolutional network** (ST-GCN; Yan et al. 2018) alternates two steps.
-- The **spatial step** mixes each node's features with its neighbours', weighted by the normalized adjacency $D^{-1/2} A D^{-1/2}$, as in a graph convolutional network (Course 6 session 2). Yan et al. use separate weights for different groups of neighbours; our lab uses one weight for the node itself and one for its neighbours.
+- The **spatial step** mixes each node's features with its neighbours', weighted by the normalized adjacency $D^{-1/2} A D^{-1/2}$, as in a graph convolutional network (Course 7 session 2). Yan et al. use separate weights for different groups of neighbours; our lab uses one weight for the node itself and one for its neighbours.
 - The **temporal step** is a 1-D convolution over time for each node, so the network sees how every joint moves.
 - Stacking blocks widens what each output sees in both space and time. Each node starts with its position and velocity.
 - Graph models put the body's structure into the architecture and share weights across joints, so they can be small: in the lab the ST-GCN had 17,716 parameters against the GRU's 34,484.
@@ -571,7 +571,7 @@ Hand in one PDF and your notebook.
 
 - Lip reading (speechreading) is one strategy some deaf and hard-of-hearing people use, alongside sign language (sessions 4–6), captions (session 3) and hearing technology. Machine lip reading, or visual speech recognition (VSR), turns video of the mouth into text; it can also help in noisy places and with silent speech, where words are mouthed without sound.
 - A phoneme is a unit of sound; a **viseme** is a lip shape shared by several phonemes (Fisher 1968). /p/, /b/ and /m/ all close the lips; voicing happens at the vocal folds and nasality behind the mouth, so neither can be seen.
-- Words with the same viseme sequence are **homophenes**, such as *pat*, *bat* and *mat* (Course 3 session 9). Context helps; the video alone cannot decide.
+- Words with the same viseme sequence are **homophenes**, such as *pat*, *bat* and *mat* (Course 4 session 9). Context helps; the video alone cannot decide.
 - People lip-read only part of what is said. In the LipNet study, three lip readers with hearing loss made 47.7% word errors on new speakers from GRID, a corpus with a tiny fixed grammar (Assael et al. 2016).
 - **Pause and try:** 20 equally common words contain homophene groups of sizes 3, 2, 3, 2 and 2, and 8 words with unique lip patterns. What is the best possible accuracy from video alone?
   - **Answer:** each group yields at most one right answer, so 5 + 8 = 13 patterns and 13/20 = 0.65.
@@ -580,8 +580,8 @@ Hand in one PDF and your notebook.
 
 - Datasets: GRID, 1,000 six-word sentences from each of 34 talkers (Cooke et al. 2006); LRW, 500 words from BBC television, up to 1,000 clips each (Chung & Zisserman 2016); LRS2 and LRS3, sentences from British television and over 400 hours of TED talks (Afouras et al. 2018; Afouras, Chung & Zisserman 2018).
 - Pixel models crop the mouth, apply a 3-D convolution over time and space, a ResNet per frame and a temporal model (GRU, Transformer or Conformer), trained with CTC (session 2) or an attention decoder. LipNet made 4.8% word errors on GRID for speakers seen in training and 11.4% on new speakers (Assael et al. 2016).
-- Auto-AVSR trained on 3,448 hours, including unlabelled video transcribed automatically, and reports word error rates (WER) on LRS3 of 19.1% from video, 1.0% from audio and 0.9% from both (Ma et al. 2023). AV-HuBERT learns from unlabelled video by self-supervision (Shi et al. 2022; Course 3 session 9).
-- Landmark models are a light alternative: track the 20 mouth points of the common 68-point face markup as a graph. A **graph attention** (GAT) layer (Veličković et al. 2018; Course 6 session 2) scores each neighbour j of point i, $e_{ij} = \text{LeakyReLU}(a^\top[Wh_i \,\|\, Wh_j])$, turns the scores into weights $\alpha_{ij}$ with a softmax over the neighbours, and sums $\alpha_{ij} W h_j$. Landmarks are light but drop the teeth and tongue, which carry information.
+- Auto-AVSR trained on 3,448 hours, including unlabelled video transcribed automatically, and reports word error rates (WER) on LRS3 of 19.1% from video, 1.0% from audio and 0.9% from both (Ma et al. 2023). AV-HuBERT learns from unlabelled video by self-supervision (Shi et al. 2022; Course 4 session 9).
+- Landmark models are a light alternative: track the 20 mouth points of the common 68-point face markup as a graph. A **graph attention** (GAT) layer (Veličković et al. 2018; Course 7 session 2) scores each neighbour j of point i, $e_{ij} = \text{LeakyReLU}(a^\top[Wh_i \,\|\, Wh_j])$, turns the scores into weights $\alpha_{ij}$ with a softmax over the neighbours, and sums $\alpha_{ij} W h_j$. Landmarks are light but drop the teeth and tongue, which carry information.
 - Bangla lip-reading data are scarce. Two public examples: LipBengal, 150 speakers and 73 classes of Bangla phonemes, letters and symbols (Sahed et al. 2025), and LRW-B, videos of isolated Bangla words (Uddin 2024).
 - **Pause and try:** a landmark and its three neighbours get attention scores 2, 1, 1 and 0. What are the weights?
   - **Answer:** $e^2, e^1, e^1, e^0$ = 7.39, 2.72, 2.72 and 1.00, summing to 13.83, so 0.534, 0.197, 0.197 and 0.072.
@@ -669,9 +669,9 @@ Hand in one PDF and your notebook.
 ### Segment 2 (7 min): models that describe
 
 - Image **captioning** generates a sentence from an image; **visual question answering** (VQA) answers a question about it.
-- CLIP trains an image encoder and a text encoder on 400 million image–caption pairs with a contrastive loss, so that matching pairs get similar unit vectors (Radford et al. 2021). It describes by retrieval, picking the candidate description most similar to the image. Course 3 session 9 covers CLIP and vision-language models (VLMs), which connect an image encoder to a language model.
+- CLIP trains an image encoder and a text encoder on 400 million image–caption pairs with a contrastive loss, so that matching pairs get similar unit vectors (Radford et al. 2021). It describes by retrieval, picking the candidate description most similar to the image. Course 4 session 9 covers CLIP and vision-language models (VLMs), which connect an image encoder to a language model.
 - BLIP adds a caption generator and cleans noisy web captions with a captioner and a filter (Li et al. 2022).
-- Text in photos (medicine labels, notices, bus signs) needs reading, and VLMs are weak on Bangla script (Course 3 session 9); session 9 builds OCR (optical character recognition).
+- Text in photos (medicine labels, notices, bus signs) needs reading, and VLMs are weak on Bangla script (Course 4 session 9); session 9 builds OCR (optical character recognition).
 - In the lab's tiny CLIP, the wording mattered: 0.957 test accuracy with a training template, 0.904 with an unseen one.
 - **Pause and try:** an image has cosine similarities 0.9, 0.2 and 0.1 with three captions. What probability does the softmax give its own caption at temperature τ = 1, and at τ = 0.1?
   - **Answer:** at τ = 1, $e^{0.9}/(e^{0.9} + e^{0.2} + e^{0.1})$ = 2.46/4.79 ≈ 0.51; at τ = 0.1 the scores become 9, 2 and 1, giving 0.999. A small temperature (0.089 in the lab) makes the choice sharp.
@@ -680,7 +680,7 @@ Hand in one PDF and your notebook.
 
 - **Hallucination:** captioning models mention objects that are not in the image, and standard caption metrics do not always penalize it (Rohrbach et al. 2018). A fluent sentence hides the error from a user who cannot see the photo.
 - Caption metrics such as BLEU (session 6) and CIDEr (Vedantam et al. 2015) measure overlap with captions written by sighted people, not usefulness. Test with blind users on real tasks: did they read the right dose?
-- **Selective prediction** answers only when a confidence score passes a threshold chosen on validation data (Chow 1970; Geifman & El-Yaniv 2017). **Coverage** is the share of inputs answered; raising the threshold lowers coverage and usually raises accuracy. Course 2 session 12 covers calibration and conformal prediction.
+- **Selective prediction** answers only when a confidence score passes a threshold chosen on validation data (Chow 1970; Geifman & El-Yaniv 2017). **Coverage** is the share of inputs answered; raising the threshold lowers coverage and usually raises accuracy. Course 3 session 12 covers calibration and conformal prediction.
 - Confidence is not enough. In the lab, the threshold answered 0.912 of clean digits at 0.986 accuracy, but also 0.668 of cut-off digits (0.140 of those right) and 0.593 of photo patches with no digit. A framing check flagged 0.705 of cut-off digits, with no false alarms.
 - Privacy: photos can show letters, bank cards and other people's faces that the user cannot see before sending. Prefer on-device processing, warn before uploading, and do not store photos.
 - **Pause and try:** at a threshold, a model answers 800 of 1,000 test images and gets 784 right. What are its coverage and its accuracy on answered images?
@@ -743,8 +743,8 @@ Hand in one PDF and your notebook.
 ### Segment 1 (6 min): reading Bangla print
 
 - Optical character recognition (OCR) turns an image of text into characters. Bangla print makes it hard in three ways: a vowel sign can be drawn on the left of a consonant but stored after it (কি); conjuncts join consonants with the hasanta (ক্ষ = ক + ্ + ষ); and the headline (মাত্রা) joins the letters of a word, so there is no white space between them.
-- The same text can be stored as different code points (য় as one or two), so normalize the OCR output and the truth with NFC before scoring (Course 4 session 2; Unicode Standard Annex #15).
-- An OCR pipeline first finds text lines (detection), then reads each line (recognition). A CRNN (Shi et al. 2017) turns the line image into a sequence of CNN features, reads them with a bidirectional recurrent network and trains with CTC (Graves et al. 2006; session 2), so it never cuts the line into letters. Tesseract's LSTM engine also reads whole lines and has a Bengali model, `ben` (Tesseract tessdata); Course 3 session 9 compares it with a vision-language model on Bangla text.
+- The same text can be stored as different code points (য় as one or two), so normalize the OCR output and the truth with NFC before scoring (Course 5 session 2; Unicode Standard Annex #15).
+- An OCR pipeline first finds text lines (detection), then reads each line (recognition). A CRNN (Shi et al. 2017) turns the line image into a sequence of CNN features, reads them with a bidirectional recurrent network and trains with CTC (Graves et al. 2006; session 2), so it never cuts the line into letters. Tesseract's LSTM engine also reads whole lines and has a Bengali model, `ben` (Tesseract tessdata); Course 4 session 9 compares it with a vision-language model on Bangla text.
 - Handwritten Bangla data include NumtaDB, a collection of handwritten digits (Alam et al. 2018), and BanglaLekha-Isolated, with basic letters, digits and common conjuncts (Biswas et al. 2017).
 - **Pause and try:** how many code points does ক্ষি have, and in what order are they stored?
   - **Answer:** 4: ক, the hasanta, ষ and then the vowel sign ি, although ি is drawn first, on the left.
@@ -836,11 +836,11 @@ Hand in one PDF and your notebook.
 
 ### Segment 2 (7 min): prediction and information
 
-- **Word prediction** shows the k most likely words that start with the letters typed so far; one selection completes the word and adds the space. A unigram model ranks words by frequency; a bigram model uses the previous word; neural language models do better with enough text (Course 4 builds a small Bangla one).
+- **Word prediction** shows the k most likely words that start with the letters typed so far; one selection completes the word and adds the space. A unigram model ranks words by frequency; a bigram model uses the previous word; neural language models do better with enough text (Course 5 builds a small Bangla one).
 - **Keystroke savings** (KS) = 1 − keystrokes with prediction / keystrokes without. In the lab, the bigram model saved 0.289, 0.386 and 0.421 of the keystrokes with 1, 3 and 5 suggestions.
-- Information theory sets the limit (Course 11 session 11). One choice among 27 equally likely symbols carries $\log_2 27 = 4.75$ bits, but text is predictable: Shannon (1951) estimated about one bit per letter of English. The lab's character models needed 4.00 bits per character with no context and 2.63 with three letters of context.
+- Information theory sets the limit (Course 2 session 11). One choice among 27 equally likely symbols carries $\log_2 27 = 4.75$ bits, but text is predictable: Shannon (1951) estimated about one bit per letter of English. The lab's character models needed 4.00 bits per character with no context and 2.63 with three letters of context.
 - **Dasher** (Ward, Blackwell & MacKay 2000) turns a language model into an input method: each possible next letter gets screen space in proportion to its probability, and the user steers into the right one with a mouse, a head pointer or eye gaze.
-- Personal words matter: 21% of the lab's test words never appeared in its training text. For Bangla, prediction also needs a tokenizer that handles conjuncts (Course 4 sessions 2 and 4).
+- Personal words matter: 21% of the lab's test words never appeared in its training text. For Bangla, prediction also needs a tokenizer that handles conjuncts (Course 5 sessions 2 and 4).
 - **Pause and try:** with 3 suggestions, KS = 0.386. How many keystrokes does a 100-character message (spaces included) need?
   - **Answer:** 100 × (1 − 0.386) ≈ 61.
 
@@ -921,7 +921,7 @@ Hand in one PDF and your notebook.
 - Metrics are not experience. Word error rate treats all errors alike; the NER model weights caption errors by their effect on understanding (session 3). Measure what users need: comprehension, task success and time.
 - The **System Usability Scale** (SUS; Brooke 1996) has ten statements answered from 1 to 5. Odd items are positive, even items negative: SUS = 2.5 × [Σ odd (answer − 1) + Σ even (5 − answer)], from 0 to 100, and it is not a percentage. In the lab, version B scored 63.1 against 51.9 for A (paired difference 11.2, interval 6.9 to 15.8), yet one person preferred A.
 - Report results for each group: dialect, age, signing hand, skin tone, lighting, device. Gaps are real: five commercial speech recognizers made on average 0.35 word errors per word for Black speakers and 0.19 for white speakers of American English (Koenecke et al. 2020).
-- Put a bootstrap interval on every group's accuracy (Course 11 session 7). Small groups give wide intervals: 0.031 wide for 1,000 test signs, 0.200 for 40. Comparing groups needs many examples: detecting 90% against 85% with 80% power takes about 683 per group.
+- Put a bootstrap interval on every group's accuracy (Course 2 session 7). Small groups give wide intervals: 0.031 wide for 1,000 test signs, 0.200 for 40. Comparing groups needs many examples: detecting 90% against 85% with 80% power takes about 683 per group.
 - **Pause and try:** each 95% interval misses the true value 5% of the time. With five groups, what is the chance that at least one interval misses?
   - **Answer:** $1 - 0.95^5 \approx 0.23$. In the lab it happened: the dim-light group (true accuracy 0.74) measured 0.875, with an interval of 0.775 to 0.975.
 
@@ -930,7 +930,7 @@ Hand in one PDF and your notebook.
 - Sign and lip videos show faces, which identify people, and often homes, family members and places. They can reveal that someone is disabled. Once published, a video cannot be withdrawn.
 - Children need a parent's consent and their own agreement (assent) in a form they understand. People in institutions, such as residential schools, may feel unable to refuse: make clear that saying no has no cost.
 - Licences shape what others can do: many lip and sign resources allow only non-commercial research, such as LRW and the lip-reading repository used in session 7. Document datasets with a datasheet (Gebru et al. 2021) and models with a model card that includes per-group results (Mitchell et al. 2019).
-- Surveillance risk: a model that captions a Deaf student's lecture could read lips on CCTV (session 7). Limit the purpose in the consent form, keep only what you need, delete on request, and process on the device where possible (session 12). Course 7 covers privacy-preserving ML; its session 11 shows that privacy methods can widen group gaps.
+- Surveillance risk: a model that captions a Deaf student's lecture could read lips on CCTV (session 7). Limit the purpose in the consent form, keep only what you need, delete on request, and process on the device where possible (session 12). Course 8 covers privacy-preserving ML; its session 11 shows that privacy methods can widen group gaps.
 - **Pause and try:** 60 children's videos were collected with their parents' consent, but 6 children said they did not want to be filmed. How many videos may you use?
   - **Answer:** 54. A child's own "no" counts even when a parent said yes.
 
@@ -990,8 +990,8 @@ Hand in one PDF and your notebook.
 ### Segment 1 (6 min): designing for the phone people have
 
 - Plan for low-cost Android phones with little memory and storage, slower processors and a battery that must last the day, and for patchy internet and mobile data that costs money. Treat these as assumptions to check with your partners, on their phones.
-- Running the model **on the device** keeps a person's video and voice on their phone (session 11), works without a network and costs no data. Course 14 (On-Device AI) teaches the toolkit, from quantization (sessions 3 and 4) and runtimes (session 7) to honest benchmarking (session 11).
-- **Dynamic int8 quantization** stores the weights of linear and recurrent layers as 8-bit integers with a scale and quantizes activations while the model runs, with no retraining (Course 4 session 10). Jacob et al. (2018) describe integer-only inference, and Krishnamoorthi (2018) and Nagel et al. (2021) survey the methods. In the lab it cut the sign model from 138,309 to 40,383 bytes, and accuracy on new signers went only from 0.943 to 0.941; but it was not meaningfully faster on this CPU.
+- Running the model **on the device** keeps a person's video and voice on their phone (session 11), works without a network and costs no data. Course 11 (On-Device AI) teaches the toolkit, from quantization (sessions 3 and 4) and runtimes (session 7) to honest benchmarking (session 11).
+- **Dynamic int8 quantization** stores the weights of linear and recurrent layers as 8-bit integers with a scale and quantizes activations while the model runs, with no retraining (Course 5 session 10). Jacob et al. (2018) describe integer-only inference, and Krishnamoorthi (2018) and Nagel et al. (2021) survey the methods. In the lab it cut the sign model from 138,309 to 40,383 bytes, and accuracy on new signers went only from 0.943 to 0.941; but it was not meaningfully faster on this CPU.
 - Language and people vary: regional varieties of Bangla such as Chittagonian and Sylheti and Bangla–English code-switching (session 2), and signers of different ages, hands and regions (sessions 4 and 5).
 - Plan maintenance: phones, words and users change. Decide who fixes the app after the course ends.
 - **Pause and try:** the lab's model has 33,708 parameters. How many bytes do its weights need at 4 bytes and at 1 byte each, and why is the saved int8 file (40,383 bytes) larger than that?

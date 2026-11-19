@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Execute course notebooks in place, keeping their outputs.
 
-    python3 tools/run_notebook.py Course_2_*/notebooks/s01_*.ipynb [more.ipynb ...]
+    python3 tools/run_notebook.py Course_3_*/notebooks/s01_*.ipynb [more.ipynb ...]
 
 Rules, matching the course conventions:
 - A code cell whose first line contains "NOT RUN" is tagged "skip-execution" and is

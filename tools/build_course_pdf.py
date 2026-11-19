@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Render a course document from Markdown to PDF.
 
-    python3 tools/build_course_pdf.py Course_2_Ten_Years_of_Deep_Learning_Ideas
+    python3 tools/build_course_pdf.py Course_3_Ten_Years_of_Deep_Learning_Ideas
 
 Reads <folder>/course_document.md and writes <folder>/<folder>_course_document.pdf
 (US Letter, with the course title in the header and page numbers in the footer).

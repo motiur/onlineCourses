@@ -23,4 +23,4 @@ One notebook per session. Read them with their saved outputs on the course websi
 | 9 | [s09_reading_support.ipynb](s09_reading_support.ipynb) | Reading support: OCR, text-to-speech and simplification | 10 | the Tesseract program with Bengali data (apt-get install tesseract-ocr tesseract-ocr-ben), pytesseract and Pillow; the NumtaDB dataset of handwritten Bangla digits from Kaggle (Bengali.AI) and Pillow |
 | 10 | [s10_aac.ipynb](s10_aac.ipynb) | Augmentative and alternative communication | 8 | nothing (all cells run) |
 | 11 | [s11_evaluation_fairness.ipynb](s11_evaluation_fairness.ipynb) | Evaluation, fairness and participatory design | 7 | nothing (all cells run) |
-| 12 | [s12_deployment.ipynb](s12_deployment.ipynb) | Deploying accessible AI in Bangladesh, and the capstone | 7 | onnx, onnxscript and onnxruntime (pip install onnx onnxscript onnxruntime); see Course 14 session 7 |
+| 12 | [s12_deployment.ipynb](s12_deployment.ipynb) | Deploying accessible AI in Bangladesh, and the capstone | 7 | onnx, onnxscript and onnxruntime (pip install onnx onnxscript onnxruntime); see Course 11 session 7 |
