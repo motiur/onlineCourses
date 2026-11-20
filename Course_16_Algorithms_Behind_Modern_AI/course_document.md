@@ -488,7 +488,7 @@ Hand in one PDF and your notebook.
 
 - **Open with:** "A string of 16 letters can be cut into pieces in 32,768 ways. One small table finds the best way, and the same table can add up all of them."
 - **Segment 1, say:** fill `best` and `back` for `nowhere` on the board.
-- **Segment 2, say:** change max to sum, then show the plot where the probability line stops on day 715.
+- **Segment 2, say:** change max to sum, then show the plot where the probability line stops after day 714.
 - **Segment 3, say:** fill the 3 × 5 counting table for `ab`, then show the check against PyTorch.
 - **Close with:** "When paths share their beginnings, combine them in a table: max for the best, sum for all." Then set assignment 6.
 
@@ -513,11 +513,11 @@ Hand in one PDF and your notebook.
 
 ### Segment 3 (7 min): CTC, a loss made of a table
 
-- Speech data give the text, but not which frame belongs to which letter. **Connectionist temporal classification** (CTC; Graves et al. 2006; Hannun 2017) adds a **blank** symbol, reads a frame path by merging repeats and then deleting blanks, and sums the probabilities of all frame paths (**alignments**) that collapse to the text. Course 12 session 2 trains a small recognizer with `nn.CTCLoss`.
-- The lattice is the target with a blank around every letter: $2L + 1$ states. A path may stay, step to the next state, or skip a blank between two **different** letters.
-- The forward table has $T \cdot (2L + 1)$ cells of at most three terms each: $O(T \cdot L)$. The loss is −log of the sum of its last two cells. In the lab, `more` has 257,575,523,205 alignments in 100 frames; the table has 900 cells.
+- Speech data give the text, but not which **frame** (a short slice of audio) belongs to which letter. **Connectionist temporal classification** (CTC; Graves et al. 2006; Hannun 2017) adds a **blank** symbol, reads a frame path by merging repeats and then deleting blanks, and sums the probabilities of all frame paths (**alignments**) that collapse to the text. Course 12 session 2 trains a small recognizer with `nn.CTCLoss`.
+- The lattice is the target's $L$ letters with a blank before, between and after them: $2L + 1$ states. A path may stay, step to the next state, or skip a blank between two **different** letters.
+- The forward table has $T \cdot (2L + 1)$ cells of at most three terms each: $O(T \cdot L)$. The loss is −log of the sum of the last two cells of the last row. In the lab, `more` has 257,575,523,205 alignments in 100 frames; the table has 900 cells.
 - The gradient needs no new formula: reverse-mode differentiation through the table (session 4) is the backward algorithm (Eisner 2016). With max in place of sum, the table gives the best alignment of a known text (forced alignment, Course 12 session 3).
-- **Decoding** is harder: the best symbol of every frame gives the best *path*, not the best text. Prefix beam search (Course 12 session 6) approximates the most probable text.
+- **Decoding** (choosing a text from the frame probabilities) is harder: the best symbol of every frame gives the best *path*, not the best text. Prefix beam search (Course 12 session 6) approximates the most probable text.
 - **Pause and try:** two frames; in each, the blank has probability 0.6 and `a` has 0.4. What does greedy decoding return, and what is the probability of the text `a`?
   - **Answer:** the best path is blank, blank (0.36), so greedy returns the empty text. The text `a` has three alignments: 0.24 + 0.24 + 0.16 = 0.64.
 
@@ -530,8 +530,8 @@ Hand in one PDF and your notebook.
 5. Sections 6–7 (30 min): the counting table for `ab`; CTC against brute force and PyTorch.
 6. Sections 8–10 (25 min): best path against best text; SentencePiece (Kudo & Richardson 2018; NOT RUN); TODO cells.
 
-- **Expect:** `nowhere`: 64 ways to cut, 3 valid, `no | where` after 25 lookups. `বাংলাদেশ | ের` 0.039983 against greedy's 0.000200. HMM: best path 0.00504, forward sum 0.03273; in 80 random cases the best probability matched brute force 80 times, the path 75 times (ties). CTC: 5 alignments and loss 1.6864 for `ab` in 3 frames; `moon` has 237,762,021,420 alignments in 100 frames and 0 in 4. Largest difference to PyTorch: 2.2e-16 for the loss, 1.0e-12 for the gradient with respect to the logits. Taken as a leaf, PyTorch's gradient for the log-probabilities differs from ours by up to 0.7000: it already includes the softmax. Greedy's text is not the most probable in 1,013, 437 and 135 of 2,000 random tables. Runtime about 5 seconds.
-- **Common problems:** comparing paths instead of scores when two paths tie; giving CTC fewer frames than letters plus double letters (the loss is `inf`); comparing with PyTorch's default `reduction="mean"`, which divides each loss by its target length.
+- **Expect:** `nowhere`: 64 ways to cut, 3 valid, `no | where` after 25 lookups. `বাংলাদেশ | ের` 0.039983 against greedy's 0.000200. HMM: best path 0.00504, forward sum 0.03273; in 80 random cases the best probability matched brute force 80 times, the path 75 times (ties). CTC: 5 alignments and loss 1.6864 for `ab` in 3 frames (every symbol 1/3); `moon` has 237,762,021,420 alignments in 100 frames and 0 in 4. Largest difference to PyTorch: 2.2e-16 for the loss, 1.0e-12 for the gradient with respect to the logits. Measured on PyTorch 2.15.0 only: with the log-probabilities as a leaf (no log-softmax in the graph), its gradient differs from ours by up to 0.7000; it equals ours plus the probabilities (within 1.0e-15). Greedy's text is not the most probable in 1,013, 437 and 135 of 2,000 random tables. Runtime: a few seconds (the saved run prints 2 s after section 8; it varies).
+- **Common problems:** comparing paths instead of scores when two paths tie; giving CTC fewer frames than letters plus one for each double letter (the loss is `inf`); comparing with PyTorch's default `reduction="mean"`, which divides each loss by its target length.
 
 ### Quiz
 
