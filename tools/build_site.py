@@ -174,6 +174,17 @@ COURSES = [
                  "behavioral rounds and take-homes, ending in a four-round mock loop.",
          topics=["Coding rounds", "ML from scratch", "Debugging", "System design", "Mock loop"],
          prereq="Course 1."),
+    dict(n=16, folder="Course_16_Algorithms_Behind_Modern_AI",
+         title="Algorithms Behind Modern AI", level="Core",
+         track="Foundations · after a data structures course",
+         summary="The data structures and algorithms inside modern AI systems, built from scratch and measured: "
+                 "arrays and cost, hashing and Bloom filters, tokenizers with heaps and tries, computation graphs "
+                 "and topological sort, dynamic programming from edit distance to the CTC loss, beam search and "
+                 "sampling, automata for constrained decoding, nearest-neighbour indexes, caches, queues and "
+                 "batching, and randomized algorithms for data pipelines.",
+         topics=["Hashing", "Tokenizers", "Dynamic programming", "Search & decoding", "Vector indexes",
+                 "Caches & queues"],
+         prereq="A first data structures and algorithms course, and Python at the level of Course 1."),
 ]
 BY_N = {c["n"]: c for c in COURSES}
 
@@ -376,6 +387,7 @@ def build_home(all_sessions):
         {node(1, "Start here: research skills, maths, code and deep learning basics")}
         {node(2, "The maths machine learning uses, with code")}
         {node(3, "The decade's core deep learning ideas")}
+        {node(16, "For students who know data structures")}
       </div>
       <div class="path-col">
         <h3><span class="step">2</span>Build</h3>
